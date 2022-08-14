@@ -29,7 +29,7 @@ const getListSortElement = () => (
   </form>`
 );
 
-export default class listSortView {
+export default class ListSortView {
   getTemplate() {
     return getListSortElement;
   }

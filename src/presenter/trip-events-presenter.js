@@ -8,18 +8,18 @@ import { RenderPosition, render } from '../render.js';
 
 export default class TripEventsPresenter {
   listSortComponent = new ListSortView();
-  waypointListComponent = new WaypointsListView();
+  waypointsListComponent = new WaypointsListView();
 
   init = (container) => {
     this.container = container;
 
     render(this.listSortComponent, this.container);
-    render(this.waypointListComponent, this.container);
-    render(new EditWaypointFormView(), this.waypointListComponent.getElement(), RenderPosition.AFTERBEGIN);
-    render(new NewWaypointFormView, this.waypointListComponent.getElement());
+    render(this.waypointsListComponent, this.container);
+    render(new EditWaypointFormView(), this.waypointsListComponent.getElement(), RenderPosition.AFTERBEGIN);
+    render(new NewWaypointFormView, this.waypointsListComponent.getElement());
 
     for (let i = 0; i < 3; i++) {
-      render(new WaypointItemView, this.waypointListComponent.getElement());
+      render(new WaypointItemView, this.waypointsListComponent.getElement());
     }
   };
 }
