@@ -1,4 +1,10 @@
-import { TYPES } from './consts.js';
+import {
+  TYPES,
+  OFFERS,
+  CITIES,
+  BASE_PRICE_RANGE,
+} from '../consts.js';
+
 import {
   getRandomPositiveInteger,
   getUniqueRandomPositiveInteger,
@@ -10,8 +16,8 @@ import {
  */
 const getRandomOffersSet = () => {
   const result = [];
-  const getRandomOffer = getUniqueRandomPositiveInteger(1, 5);
-  for (let i = 0; i < getRandomPositiveInteger(1,5); i++) {
+  const getRandomOffer = getUniqueRandomPositiveInteger(1, OFFERS.length);
+  for (let i = 0; i < getRandomPositiveInteger(0, OFFERS.length); i++) {
     result.push(getRandomOffer());
   }
   return result;
@@ -28,8 +34,8 @@ export const generateWaypoint = (id = 0) => ({
   type: TYPES[getRandomPositiveInteger(0,TYPES.length - 1)],
   dateFrom: '2022-08-18T15:39:12.331Z',
   dateTo: '2022-08-18T20:13:59.437Z',
-  destination: getRandomPositiveInteger(1, 20),
-  basePrice: getRandomPositiveInteger(300, 1500),
+  destination: getRandomPositiveInteger(1, CITIES.length),
+  basePrice: getRandomPositiveInteger(...BASE_PRICE_RANGE),
   isFavorite: Boolean(getRandomPositiveInteger(0, 1)),
   offers: getRandomOffersSet(),
 });
