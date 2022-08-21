@@ -1,4 +1,4 @@
-import { TYPE } from './consts.js';
+import { TYPES } from './consts.js';
 import {
   getRandomPositiveInteger,
   getUniqueRandomPositiveInteger,
@@ -17,6 +17,7 @@ const getRandomOffersSet = () => {
   return result;
 };
 
+// TODO: Randomize date with dayjs
 /**
  * Генерирует случайную точку маршрута
  * @param {number} id - id точки маршрута
@@ -24,7 +25,7 @@ const getRandomOffersSet = () => {
  */
 export const generateWaypoint = (id = 0) => ({
   id,
-  type: TYPE[getRandomPositiveInteger(0,TYPE.length - 1)],
+  type: TYPES[getRandomPositiveInteger(0,TYPES.length - 1)],
   dateFrom: '2022-08-18T15:39:12.331Z',
   dateTo: '2022-08-18T20:13:59.437Z',
   destination: getRandomPositiveInteger(1, 20),
