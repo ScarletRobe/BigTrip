@@ -20,12 +20,15 @@ const generatePictures = (city) => {
   return result;
 };
 
-export const generateDestination = (id = 0) => {
-  const city = CITIES[getRandomPositiveInteger(0, CITIES.length - 1)];
-  return {
-    id,
-    name: city,
-    description: `${city}${CITIES_DESCRIPTIONS[getRandomPositiveInteger(0, CITIES_DESCRIPTIONS.length - 1)]}`,
-    pictures: generatePictures(city),
-  };
+export const generateDestinations = () => {
+  const result = [];
+  for (let id = 1; id <= CITIES.length; id++) {
+    result.push({
+      id,
+      name: CITIES[id - 1],
+      description: `${CITIES[id - 1]}${CITIES_DESCRIPTIONS[getRandomPositiveInteger(0, CITIES_DESCRIPTIONS.length - 1)]}`,
+      pictures: generatePictures(CITIES[id - 1]),
+    });
+  }
+  return result;
 };

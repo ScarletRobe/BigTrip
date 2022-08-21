@@ -1,29 +1,33 @@
 import {
   TYPES,
   OFFERS,
-  OFFERS_RANGE,
+  OFFER_PRICE_RANGE
 } from '../consts.js';
 
 import {
   getRandomPositiveInteger,
-  getUniqueRandomPositiveInteger,
 } from '../utils.js';
 
 const getOffers = () => {
-  const getUniqueOfferId = getUniqueRandomPositiveInteger(0, OFFERS.length - 1);
   const offers = [];
-  for (let id = 0; id < getRandomPositiveInteger(...OFFERS_RANGE); id++) {
+  for (let id = 1; id <= OFFERS.length; id++) {
     offers.push({
       id,
-      title: OFFERS[getUniqueOfferId()],
-      price: getRandomPositiveInteger(20, 500),
+      title: OFFERS[id - 1],
+      price: getRandomPositiveInteger(...OFFER_PRICE_RANGE),
     });
   }
   return offers;
 };
 
-export const getRandomOffersList = () => ({
-  type: TYPES[getRandomPositiveInteger(0, TYPES.length - 1)],
-  offers: getOffers(),
-});
+export const generateOffersByType = () => {
+  const result = [];
+  for (let i = 0; i < TYPES.length; i++) {
+    result.push({
+      type: TYPES[i],
+      offers: getOffers(),
+    });
+  }
+  return result;
+};
 
