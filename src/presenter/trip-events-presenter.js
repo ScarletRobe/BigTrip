@@ -11,25 +11,31 @@ export default class TripEventsPresenter {
   listSortComponent = new ListSortView();
   waypointsListComponent = new WaypointsListView();
 
+  getSelectedDestination(waypoint) {
+    return this.waypointsModel.destinations.find((dest) => dest.id === waypoint.destination);
+  }
+
+  getSelectedOffers(waypoint) {
+    const offersList = this.waypointsModel.offers.find((offer) => offer.type === waypoint.type);
+    const offers = [];
+    waypoint.offers.forEach((offerId) => {
+      offers.push(offersList.offers.find((offer) => offer.id === offerId));
+    });
+    return offers;
+  }
+
   init = (container, waypointsModel) => {
     this.container = container;
     this.waypointsModel = waypointsModel;
 
     render(this.listSortComponent, this.container);
     render(this.waypointsListComponent, this.container);
-    render(new EditWaypointFormView(), this.waypointsListComponent.getElement(), RenderPosition.AFTERBEGIN);
+
+    render(new EditWaypointFormView(this.waypointsModel.waypoints[0], this.getSelectedDestination(this.waypointsModel.waypoints[0]), this.getSelectedOffers(this.waypointsModel.waypoints[0]), this.waypointsModel.destinations, this.waypointsModel.offers), this.waypointsListComponent.getElement(), RenderPosition.AFTERBEGIN);
     render(new NewWaypointFormView(), this.waypointsListComponent.getElement());
 
-    for (let i = 0; i < TRIP_EVENTS_AMOUNT; i++) {
-      const destination = this.waypointsModel.destinations.find((dest) => dest.id === this.waypointsModel.waypoints[i].destination);
-
-      const offersList = this.waypointsModel.offers.find((offer) => offer.type === this.waypointsModel.waypoints[i].type);
-      const offers = [];
-      this.waypointsModel.waypoints[i].offers.forEach((offerId) => {
-        offers.push(offersList.offers.find((offer) => offer.id === offerId));
-      });
-
-      render(new WaypointItemView(this.waypointsModel.waypoints[i], destination, offers), this.waypointsListComponent.getElement());
+    for (let i = 1; i < TRIP_EVENTS_AMOUNT; i++) {
+      render(new WaypointItemView(this.waypointsModel.waypoints[i], this.getSelectedDestination(this.waypointsModel.waypoints[i]), this.getSelectedOffers(this.waypointsModel.waypoints[i])), this.waypointsListComponent.getElement());
     }
   };
 }
