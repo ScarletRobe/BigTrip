@@ -3,12 +3,21 @@ import {
   OFFERS,
   CITIES,
   BASE_PRICE_RANGE,
+  DATE,
 } from '../consts.js';
 
 import {
   getRandomPositiveInteger,
   getUniqueRandomPositiveInteger,
 } from '../utils.js';
+
+import dayjs from 'dayjs';
+
+const generateDate = () => {
+  const dateFrom = dayjs(DATE).add(getRandomPositiveInteger(0, 5), 'd').add(getRandomPositiveInteger(0, 5), 'h').add(getRandomPositiveInteger(0, 59), 'm');
+  const dateTo = dayjs(dateFrom).add(getRandomPositiveInteger(0, 1), 'd').add(getRandomPositiveInteger(0, 5), 'h').add(getRandomPositiveInteger(0, 59), 'm');
+  return {dateFrom, dateTo};
+};
 
 /**
  * Генерирует случайный набор offers для точки маршрута
@@ -23,19 +32,21 @@ const getRandomOffersSet = () => {
   return result;
 };
 
-// TODO: Randomize date with dayjs
 /**
  * Генерирует случайную точку маршрута
  * @param {number} id - id точки маршрута
  * @returns случайно сгенерированная точка маршрута
  */
-export const generateWaypoint = (id = 0) => ({
-  id,
-  type: TYPES[getRandomPositiveInteger(0,TYPES.length - 1)],
-  dateFrom: '2022-08-18T15:39:12.331Z',
-  dateTo: '2022-08-18T20:13:59.437Z',
-  destination: getRandomPositiveInteger(1, CITIES.length),
-  basePrice: getRandomPositiveInteger(...BASE_PRICE_RANGE),
-  isFavorite: Boolean(getRandomPositiveInteger(0, 1)),
-  offers: getRandomOffersSet(),
-});
+export const generateWaypoint = (id = 0) => {
+  const date = generateDate();
+  return {
+    id,
+    type: TYPES[getRandomPositiveInteger(0,TYPES.length - 1)],
+    dateFrom: date.dateFrom,
+    dateTo: date.dateTo,
+    destination: getRandomPositiveInteger(1, CITIES.length),
+    basePrice: getRandomPositiveInteger(...BASE_PRICE_RANGE),
+    isFavorite: Boolean(getRandomPositiveInteger(0, 1)),
+    offers: getRandomOffersSet(),
+  };
+};

@@ -2,6 +2,7 @@ const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 's
 
 // Waypoint
 const BASE_PRICE_RANGE = [300, 1500];
+const DATE = '2022-08-18T15:39:12.331Z';
 
 // Offers
 const OFFERS = ['Choose meal', 'Choose seats', 'Upgrade to comfort class', 'Upgrade to business class', 'Add luggage', 'Business lounge'];
@@ -12,7 +13,6 @@ const CITIES = ['Chamonix', 'Geneva', 'Oslo', 'Helsinki', 'Amsterdam'];
 const CITIES_DESCRIPTIONS = [', middle-eastern paradise, a perfect place to stay with a family.', ', with an embankment of a mighty river as a centre of attraction.', ', a true asian pearl.', ', with a beautiful old town.'];
 const PICTURES_DESCRIPTIONS = ['street market', 'city centre', 'kindergarten', 'parliament building', 'zoo', 'central station'];
 const PICTURES_RANGE = [1, 10];
-
 
 const TRIP_EVENTS_AMOUNT = 10;
 
@@ -26,4 +26,5 @@ export {
   TRIP_EVENTS_AMOUNT,
   OFFER_PRICE_RANGE,
   BASE_PRICE_RANGE,
+  DATE,
 };
