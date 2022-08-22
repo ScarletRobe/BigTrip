@@ -11,10 +11,20 @@ export default class TripEventsPresenter {
   listSortComponent = new ListSortView();
   waypointsListComponent = new WaypointsListView();
 
+  /**
+   * Ищет выбранное место назначения.
+   * @param {object} waypoint - объект с информацией о месте назначения..
+   * @returns {object} объект с информацией о выбранном месте назначения.
+   */
   getSelectedDestination(waypoint) {
     return this.waypointsModel.destinations.find((dest) => dest.id === waypoint.destination);
   }
 
+  /**
+   * Ищет информацию о выбранных дополнительных предложениях.
+   * @param {object} waypoint - объект с информацией о месте назначения.
+   * @returns {array} массив объектов.
+   */
   getSelectedOffers(waypoint) {
     const offersList = this.waypointsModel.offers.find((offer) => offer.type === waypoint.type);
     const offers = [];
@@ -24,6 +34,11 @@ export default class TripEventsPresenter {
     return offers;
   }
 
+  /**
+   * Инициализирует презентер. Отрисовывывает базовые элементы.
+   * @param {object} container - DOM элемент, в который будут помещены все элементы, созданные в ходе работы.
+   * @param {object} waypointsModel - Модель, содержащая всю информацию о местах назначения.
+   */
   init = (container, waypointsModel) => {
     this.container = container;
     this.waypointsModel = waypointsModel;

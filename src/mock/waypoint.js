@@ -13,6 +13,10 @@ import {
 
 import dayjs from 'dayjs';
 
+/**
+ * Генерирует случайные даты прибытия и отправления.
+ * @returns объект с датами.
+ */
 const generateDate = () => {
   const dateFrom = dayjs(DATE).add(getRandomPositiveInteger(0, 5), 'd').add(getRandomPositiveInteger(0, 5), 'h').add(getRandomPositiveInteger(0, 59), 'm');
   const dateTo = dayjs(dateFrom).add(getRandomPositiveInteger(0, 1), 'd').add(getRandomPositiveInteger(0, 5), 'h').add(getRandomPositiveInteger(0, 59), 'm');
@@ -20,8 +24,8 @@ const generateDate = () => {
 };
 
 /**
- * Генерирует случайный набор offers для точки маршрута
- * @returns массив выбранных offers
+ * Генерирует случайный набор выбранных дополнительных предложений для точки маршрута.
+ * @returns {array} массив id предложений.
  */
 const getRandomOffersSet = () => {
   const result = [];
@@ -35,7 +39,7 @@ const getRandomOffersSet = () => {
 /**
  * Генерирует случайную точку маршрута
  * @param {number} id - id точки маршрута
- * @returns случайно сгенерированная точка маршрута
+ * @returns {object} объект с информацией о точке маршрута.
  */
 export const generateWaypoint = (id = 0) => {
   const date = generateDate();

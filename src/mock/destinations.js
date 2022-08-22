@@ -9,6 +9,11 @@ import {
   PICTURES_RANGE,
 } from '../consts.js';
 
+/**
+ * Генерирует раздел со случайными фотографиями и их описаниями для города.
+ * @param {string} city - место назначения.
+ * @returns {array} массив фотографий и описаний.
+ */
 const generatePictures = (city) => {
   const result = [];
   for (let i = 0; i < getRandomPositiveInteger(...PICTURES_RANGE); i++) {
@@ -20,6 +25,10 @@ const generatePictures = (city) => {
   return result;
 };
 
+/**
+ * Генерирует случайные места назначения.
+ * @returns {array} массив мест назначения.
+ */
 export const generateDestinations = () => {
   const result = [];
   for (let id = 1; id <= CITIES.length; id++) {

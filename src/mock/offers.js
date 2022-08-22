@@ -8,6 +8,10 @@ import {
   getRandomPositiveInteger,
 } from '../utils.js';
 
+/**
+ * Генерирует все возможные дополнительные предложения.
+ * @returns {array} массив предложений.
+ */
 const getOffers = () => {
   const offers = [];
   for (let id = 1; id <= OFFERS.length; id++) {
@@ -20,6 +24,10 @@ const getOffers = () => {
   return offers;
 };
 
+/**
+ * Генерирует все варианты событий и дополнительных предложений к ним.
+ * @returns {array} массив типов событий и опций.
+ */
 export const generateOffersByType = () => {
   const result = [];
   for (let i = 0; i < TYPES.length; i++) {

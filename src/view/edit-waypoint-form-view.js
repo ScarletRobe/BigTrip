@@ -1,8 +1,19 @@
 import { createElement } from '../render.js';
 import { humanizeDate } from '../utils.js';
 
+/**
+ * Генерирует вспомогательные опции к инпуту ввода города.
+ * @param {array} destinations - массив мест назначений.
+ * @returns {string} строка с HTML кодом.
+ */
 const getDestinationListOptions = (destinations) => destinations.map((destination) => (`<option value="${destination.name}"></option>`)).join('\n');
 
+/**
+ * Генерирует опции для инпута выбора события.
+ * @param {string} selectedType - выбранный тип события.
+ * @param {array} offers - массив всех типов событий и дополнительных предложений.
+ * @returns {string} строка с HTML кодом.
+ */
 const getEventTypeItems = (selectedType, offers) => offers.map((offer) => {
   const checked = offer.type === selectedType ? 'checked' : '';
 
@@ -14,6 +25,13 @@ const getEventTypeItems = (selectedType, offers) => offers.map((offer) => {
   );
 }).join('\n');
 
+/**
+ * Генерирует опции для формы выбора дополнительных предложений.
+ * @param {string} selectedType - выбранный тип события.
+ * @param {array} selectedOffers - массив id выбранных дополнительных предложений.
+ * @param {array} offers - массив всех типов событий и дополнительных предложений.
+ * @returns {string} строка с HTML кодом.
+ */
 const getEventAvailableOffers = (selectedType, selectedOffers, offers) => {
   const offersByType = offers.find((offer) => offer.type === selectedType);
 
@@ -33,6 +51,15 @@ const getEventAvailableOffers = (selectedType, selectedOffers, offers) => {
   }).join('\n');
 };
 
+/**
+ * Генерирует форму редактирования события.
+ * @param {object} waypoint - объект с информацией о месте назначения.
+ * @param {object} selectedDestination - объект с информацией о выбранном месте назначения.
+ * @param {array} selectedOffers - массив id выбранных дополнительных предложений.
+ * @param {array} destinations - массив мест назначений.
+ * @param {array} offers - массив всех типов событий и дополнительных предложений.
+ * @returns {string} строка с HTML кодом.
+ */
 const getEditWaypointFormTemplate = (waypoint, selectedDestination, selectedOffers, destinations, offers) => (
   `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -107,6 +134,13 @@ const getEditWaypointFormTemplate = (waypoint, selectedDestination, selectedOffe
 );
 
 export default class EditWaypointFormView {
+  /**
+   * @param {object} waypoint - объект с информацией о месте назначения.
+   * @param {object} selectedDestination - объект с информацией о выбранном месте назначения.
+   * @param {array} selectedOffers - массив id выбранных дополнительных предложений.
+   * @param {array} destinations - массив мест назначений.
+   * @param {array} offers - массив всех типов событий и дополнительных предложений.
+   */
   constructor(waypoint, selectedDestination, selectedOffers, destinations, offers) {
     this.waypoint = waypoint;
     this.selectedDestination = selectedDestination;

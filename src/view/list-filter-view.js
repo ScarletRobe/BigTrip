@@ -1,5 +1,9 @@
 import { createElement } from '../render.js';
 
+/**
+ * Возвращает шаблон элемента фильтрации событий.
+ * @returns {string} строка с HTML кодом.
+ */
 const getListfilterTemplate = () => (
   `<form class="trip-filters" action="#" method="get">
     <div class="trip-filters__filter">
