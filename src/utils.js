@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 // Алгоритм взят с https://learn.javascript.ru/task/random-int-min-max
 /**
  * Возвращает случайное число из диапазона.
@@ -37,7 +39,10 @@ const getUniqueRandomPositiveInteger = (min, max) => {
   return () => Number(numbers.splice(getRandomPositiveInteger(0, numbers.length - 1), 1));
 };
 
+const humanizeDate = (date, format = 'D MMMM') => dayjs(date).format(format);
+
 export {
   getRandomPositiveInteger,
   getUniqueRandomPositiveInteger,
+  humanizeDate,
 };
