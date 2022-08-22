@@ -1,11 +1,13 @@
 import {
   TYPES,
   OFFERS,
-  OFFER_PRICE_RANGE
+  OFFER_PRICE_RANGE,
+  OFFERS_AMOUNT,
 } from '../consts.js';
 
 import {
   getRandomPositiveInteger,
+  getUniqueRandomPositiveInteger,
 } from '../utils.js';
 
 /**
@@ -14,10 +16,11 @@ import {
  */
 const getOffers = () => {
   const offers = [];
-  for (let id = 1; id <= OFFERS.length; id++) {
+  const getUniqueOfferId = getUniqueRandomPositiveInteger(1, OFFERS.length - 1);
+  for (let id = 1; id <= OFFERS_AMOUNT; id++) {
     offers.push({
       id,
-      title: OFFERS[id - 1],
+      title: OFFERS[getUniqueOfferId()],
       price: getRandomPositiveInteger(...OFFER_PRICE_RANGE),
     });
   }

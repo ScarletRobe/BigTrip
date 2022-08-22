@@ -1,9 +1,9 @@
 import {
   TYPES,
-  OFFERS,
   CITIES,
   BASE_PRICE_RANGE,
   DATE,
+  OFFERS_AMOUNT,
 } from '../consts.js';
 
 import {
@@ -29,8 +29,8 @@ const generateDate = () => {
  */
 const getRandomOffersSet = () => {
   const result = [];
-  const getRandomOffer = getUniqueRandomPositiveInteger(1, OFFERS.length);
-  for (let i = 0; i < getRandomPositiveInteger(0, OFFERS.length); i++) {
+  const getRandomOffer = getUniqueRandomPositiveInteger(1, OFFERS_AMOUNT);
+  for (let i = 0; i < getRandomPositiveInteger(0, OFFERS_AMOUNT); i++) {
     result.push(getRandomOffer());
   }
   return result;

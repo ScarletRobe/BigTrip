@@ -7,6 +7,7 @@ const DATE = '2022-08-18T15:39:12.331Z';
 // Offers
 const OFFERS = ['Choose meal', 'Choose seats', 'Upgrade to comfort class', 'Upgrade to business class', 'Add luggage', 'Business lounge'];
 const OFFER_PRICE_RANGE = [20, 500];
+const OFFERS_AMOUNT = 4;
 
 // Destinations
 const CITIES = ['Chamonix', 'Geneva', 'Oslo', 'Helsinki', 'Amsterdam'];
@@ -27,4 +28,5 @@ export {
   OFFER_PRICE_RANGE,
   BASE_PRICE_RANGE,
   DATE,
+  OFFERS_AMOUNT,
 };
