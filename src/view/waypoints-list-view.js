@@ -1,5 +1,9 @@
 import { createElement } from '../render.js';
 
+/**
+ * Возвращает шаблон контейнера для списка мест назначений.
+ * @returns {string} строка с HTML кодом.
+ */
 const getWaypointsListTemplate = () => (
   `<ul class="trip-events__list">
   </ul>`

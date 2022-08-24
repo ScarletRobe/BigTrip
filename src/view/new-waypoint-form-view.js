@@ -1,5 +1,9 @@
 import { createElement } from '../render.js';
 
+/**
+ * Возвращает шаблон элемента создания нового событий.
+ * @returns {string} строка с HTML кодом.
+ */
 const getNewPointFormTemplate = () => (
   `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
