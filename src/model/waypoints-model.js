@@ -5,19 +5,19 @@ import { generateOffersByType } from '../mock/offers.js';
 import { generateDestinations } from '../mock/destinations.js';
 
 export default class WaypointsModel {
-  _waypoints = Array.from({length: TRIP_EVENTS_AMOUNT}, generateWaypoint);
-  _offers = generateOffersByType();
-  _destinations = generateDestinations();
+  #waypoints = Array.from({length: TRIP_EVENTS_AMOUNT}, generateWaypoint);
+  #offers = generateOffersByType();
+  #destinations = generateDestinations();
 
   get waypoints () {
-    return this._waypoints;
+    return this.#waypoints;
   }
 
   get offers () {
-    return this._offers;
+    return this.#offers;
   }
 
   get destinations () {
-    return this._destinations;
+    return this.#destinations;
   }
 }

@@ -8,8 +8,11 @@ import { RenderPosition, render } from '../render.js';
 import { TRIP_EVENTS_AMOUNT } from '../consts.js';
 
 export default class TripEventsPresenter {
-  listSortComponent = new ListSortView();
-  waypointsListComponent = new WaypointsListView();
+  #listSortComponent = new ListSortView();
+  #waypointsListComponent = new WaypointsListView();
+
+  #container = null;
+  #waypointsModel = null;
 
   /**
    * Ищет выбранное место назначения.
@@ -17,7 +20,7 @@ export default class TripEventsPresenter {
    * @returns {object} объект с информацией о выбранном месте назначения.
    */
   getSelectedDestination(waypoint) {
-    return this.waypointsModel.destinations.find((dest) => dest.id === waypoint.destination);
+    return this.#waypointsModel.destinations.find((dest) => dest.id === waypoint.destination);
   }
 
   /**
@@ -26,7 +29,7 @@ export default class TripEventsPresenter {
    * @returns {array} массив объектов.
    */
   getSelectedOffers(waypoint) {
-    const offersList = this.waypointsModel.offers.find((offer) => offer.type === waypoint.type);
+    const offersList = this.#waypointsModel.offers.find((offer) => offer.type === waypoint.type);
     const offers = [];
     waypoint.offers.forEach((offerId) => {
       offers.push(offersList.offers.find((offer) => offer.id === offerId));
@@ -40,17 +43,17 @@ export default class TripEventsPresenter {
    * @param {object} waypointsModel - Модель, содержащая всю информацию о местах назначения.
    */
   init = (container, waypointsModel) => {
-    this.container = container;
-    this.waypointsModel = waypointsModel;
+    this.#container = container;
+    this.#waypointsModel = waypointsModel;
 
-    render(this.listSortComponent, this.container);
-    render(this.waypointsListComponent, this.container);
+    render(this.#listSortComponent, this.#container);
+    render(this.#waypointsListComponent, this.#container);
 
-    render(new EditWaypointFormView(this.waypointsModel.waypoints[0], this.getSelectedDestination(this.waypointsModel.waypoints[0]), this.getSelectedOffers(this.waypointsModel.waypoints[0]), this.waypointsModel.destinations, this.waypointsModel.offers), this.waypointsListComponent.getElement(), RenderPosition.AFTERBEGIN);
-    render(new NewWaypointFormView(), this.waypointsListComponent.getElement());
+    render(new EditWaypointFormView(this.#waypointsModel.waypoints[0], this.getSelectedDestination(this.#waypointsModel.waypoints[0]), this.getSelectedOffers(this.#waypointsModel.waypoints[0]), this.#waypointsModel.destinations, this.#waypointsModel.offers), this.#waypointsListComponent.element, RenderPosition.AFTERBEGIN);
+    render(new NewWaypointFormView(), this.#waypointsListComponent.element);
 
     for (let i = 1; i < TRIP_EVENTS_AMOUNT; i++) {
-      render(new WaypointItemView(this.waypointsModel.waypoints[i], this.getSelectedDestination(this.waypointsModel.waypoints[i]), this.getSelectedOffers(this.waypointsModel.waypoints[i])), this.waypointsListComponent.getElement());
+      render(new WaypointItemView(this.#waypointsModel.waypoints[i], this.getSelectedDestination(this.#waypointsModel.waypoints[i]), this.getSelectedOffers(this.#waypointsModel.waypoints[i])), this.#waypointsListComponent.element);
     }
   };
 }

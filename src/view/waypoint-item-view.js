@@ -57,6 +57,8 @@ const getWaypointItemTemplate = (waypoint, selectedDestination, offers) => (
 );
 
 export default class WaypointItemView {
+  #element = null;
+
   /**
    * @param {object} waypoint - объект с информацией о месте назначения.
    * @param {object} selectedDestination - объект с информацией о выбранном месте назначения.
@@ -68,19 +70,19 @@ export default class WaypointItemView {
     this.offers = offers;
   }
 
-  getTemplate() {
+  get template () {
     return getWaypointItemTemplate(this.waypoint, this.selectedDestination, this.offers);
   }
 
-  getElement() {
-    if(!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element () {
+    if(!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

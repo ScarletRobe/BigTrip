@@ -134,6 +134,8 @@ const getEditWaypointFormTemplate = (waypoint, selectedDestination, selectedOffe
 );
 
 export default class EditWaypointFormView {
+  #element = null;
+
   /**
    * @param {object} waypoint - объект с информацией о месте назначения.
    * @param {object} selectedDestination - объект с информацией о выбранном месте назначения.
@@ -149,19 +151,19 @@ export default class EditWaypointFormView {
     this.offers = offers;
   }
 
-  getTemplate() {
+  get template () {
     return getEditWaypointFormTemplate(this.waypoint, this.selectedDestination, this.selectedOffers, this.destinations, this.offers);
   }
 
-  getElement() {
-    if(!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element () {
+    if(!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
