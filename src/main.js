@@ -13,11 +13,11 @@ const tripEventsContainerElement = document.querySelector('.trip-events');
 
 // Переменные
 
-const tripEventsPresenter = new TripEventsPresenter;
 const waypointsModel = new WaypointsModel;
+const tripEventsPresenter = new TripEventsPresenter(tripEventsContainerElement, waypointsModel);
 
 //
 
 render(new ListFilterView(), filtersContainerElement);
-tripEventsPresenter.init(tripEventsContainerElement, waypointsModel);
+tripEventsPresenter.init();
 
