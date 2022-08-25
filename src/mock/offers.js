@@ -15,30 +15,20 @@ import {
  * @returns {array} массив предложений.
  */
 const getOffers = () => {
-  const offers = [];
   const getUniqueOfferId = getUniqueRandomPositiveInteger(1, OFFERS.length - 1);
-  for (let id = 1; id <= OFFERS_AMOUNT; id++) {
-    offers.push({
-      id,
-      title: OFFERS[getUniqueOfferId()],
-      price: getRandomPositiveInteger(...OFFER_PRICE_RANGE),
-    });
-  }
-  return offers;
+  return Array.from({length: OFFERS_AMOUNT}, (_value, index) => ({
+    id: ++index,
+    title: OFFERS[getUniqueOfferId()],
+    price: getRandomPositiveInteger(...OFFER_PRICE_RANGE),
+  }));
 };
 
 /**
  * Генерирует все варианты событий и дополнительных предложений к ним.
  * @returns {array} массив типов событий и опций.
  */
-export const generateOffersByType = () => {
-  const result = [];
-  for (let i = 0; i < TYPES.length; i++) {
-    result.push({
-      type: TYPES[i],
-      offers: getOffers(),
-    });
-  }
-  return result;
-};
+export const generateOffersByType = () => Array.from({length: TYPES.length}, (_value, index) => ({
+  type: TYPES[index],
+  offers: getOffers(),
+}));
 
