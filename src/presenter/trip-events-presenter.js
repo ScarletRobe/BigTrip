@@ -1,10 +1,10 @@
 import ListSortView from '../view/list-sort-view.js';
 import WaypointsListView from '../view/waypoints-list-view.js';
-import NewWaypointFormView from '../view/new-waypoint-form-view.js';
 import WaypointItemView from '../view/waypoint-item-view.js';
 import EditWaypointFormView from '../view/edit-waypoint-form-view.js';
+import EmptyListView from '../view/empty-list-view.js';
 
-import { RenderPosition, render } from '../render.js';
+import { render } from '../render.js';
 import { TRIP_EVENTS_AMOUNT } from '../consts.js';
 
 export default class TripEventsPresenter {
@@ -13,6 +13,11 @@ export default class TripEventsPresenter {
 
   #container = null;
   #waypointsModel = null;
+
+  constructor(container, waypointsModel) {
+    this.#container = container;
+    this.#waypointsModel = waypointsModel;
+  }
 
   /**
    * Ищет выбранное место назначения.
@@ -42,18 +47,59 @@ export default class TripEventsPresenter {
    * @param {object} container - DOM элемент, в который будут помещены все элементы, созданные в ходе работы.
    * @param {object} waypointsModel - Модель, содержащая всю информацию о местах назначения.
    */
-  init = (container, waypointsModel) => {
-    this.#container = container;
-    this.#waypointsModel = waypointsModel;
-
+  init = () => {
     render(this.#listSortComponent, this.#container);
     render(this.#waypointsListComponent, this.#container);
 
-    render(new EditWaypointFormView(this.#waypointsModel.waypoints[0], this.getSelectedDestination(this.#waypointsModel.waypoints[0]), this.getSelectedOffers(this.#waypointsModel.waypoints[0]), this.#waypointsModel.destinations, this.#waypointsModel.offers), this.#waypointsListComponent.element, RenderPosition.AFTERBEGIN);
-    render(new NewWaypointFormView(), this.#waypointsListComponent.element);
-
-    for (let i = 1; i < TRIP_EVENTS_AMOUNT; i++) {
-      render(new WaypointItemView(this.#waypointsModel.waypoints[i], this.getSelectedDestination(this.#waypointsModel.waypoints[i]), this.getSelectedOffers(this.#waypointsModel.waypoints[i])), this.#waypointsListComponent.element);
+    if (!this.#waypointsModel.waypoints.length) {
+      render(new EmptyListView(), this.#container);
+    }
+    for (let i = 0; i < TRIP_EVENTS_AMOUNT; i++) {
+      this.#renderWaypoint(this.#waypointsModel.waypoints[i], this.getSelectedDestination(this.#waypointsModel.waypoints[i]), this.getSelectedOffers(this.#waypointsModel.waypoints[i]));
     }
   };
+
+  #renderWaypoint(...args) {
+    const waypointComponent = new WaypointItemView(...args);
+    const waypointEditFormComponent = new EditWaypointFormView(...args, this.#waypointsModel.destinations, this.#waypointsModel.offers);
+
+    const replaceWaypointToEditForm = () => {
+      this.#waypointsListComponent.element.replaceChild(waypointEditFormComponent.element, waypointComponent.element);
+    };
+
+    const replaceEditFormToWaypoint = () => {
+      this.#waypointsListComponent.element.replaceChild(waypointComponent.element, waypointEditFormComponent.element);
+      document.removeEventListener('keydown', documentKeydownHandler);
+    };
+
+    waypointEditFormComponent.element.querySelector('.event--edit').addEventListener('submit', (evt) => {
+      evt.preventDefault();
+      replaceEditFormToWaypoint();
+    });
+    waypointEditFormComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+      replaceEditFormToWaypoint();
+    });
+
+    const renderWaypointEditForm = () => {
+      replaceWaypointToEditForm();
+      document.addEventListener('keydown', documentKeydownHandler);
+    };
+
+    waypointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+      renderWaypointEditForm();
+    });
+
+    render(waypointComponent, this.#waypointsListComponent.element);
+
+    // Обработчики
+
+    function documentKeydownHandler(evt) {
+      if (evt.code === 'Escape' || evt.code === 'Esc') {
+        evt.preventDefault();
+        replaceEditFormToWaypoint();
+      }
+    }
+
+    // }
+  }
 }
