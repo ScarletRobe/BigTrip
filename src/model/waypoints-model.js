@@ -5,7 +5,7 @@ import { generateOffersByType } from '../mock/offers.js';
 import { generateDestinations } from '../mock/destinations.js';
 
 export default class WaypointsModel {
-  #waypoints = Array.from({length: TRIP_EVENTS_AMOUNT}, generateWaypoint);
+  #waypoints = Array.from({length: TRIP_EVENTS_AMOUNT}, (_value, index) => generateWaypoint(index));
   #offers = generateOffersByType();
   #destinations = generateDestinations();
 
