@@ -15,6 +15,10 @@ export default class TripEventsPresenter {
   #container = null;
   #waypointsModel = null;
 
+  /**
+   * @param {object} container - DOM элемент, в который будут помещены все элементы, созданные в ходе работы.
+   * @param {object} waypointsModel - Модель, содержащая всю информацию о местах назначения.
+   */
   constructor(container, waypointsModel) {
     this.#container = container;
     this.#waypointsModel = waypointsModel;
@@ -44,9 +48,7 @@ export default class TripEventsPresenter {
   }
 
   /**
-   * Инициализирует презентер. Отрисовывывает базовые элементы.
-   * @param {object} container - DOM элемент, в который будут помещены все элементы, созданные в ходе работы.
-   * @param {object} waypointsModel - Модель, содержащая всю информацию о местах назначения.
+   * Отрисовывывает базовые элементы.
    */
   init = () => {
     render(this.#listSortComponent, this.#container);
@@ -60,30 +62,43 @@ export default class TripEventsPresenter {
     }
   };
 
+  /**
+   *
+   * @param {object} waypoint - объект с информацией о месте назначения.
+   * @param {object} selectedDestination - объект с информацией о выбранном месте назначения.
+   * @param {array} selectedOffers - массив id выбранных дополнительных предложений.
+   */
   #renderWaypoint(waypoint, selectedDestination, selectedOffers) {
-    const waypointComponent = new WaypointItemView(waypoint, selectedDestination, selectedOffers);
-    const waypointEditFormComponent = new EditWaypointFormView(waypoint, selectedDestination, selectedOffers, this.#waypointsModel.destinations, this.#waypointsModel.offers);
+    const currentWaypoint = waypoint;
+    const currentDestination = selectedDestination;
+    const currentOffers = selectedOffers;
 
-    const replaceWaypointToEditForm = () => {
+    const waypointComponent = new WaypointItemView(waypoint, selectedDestination, selectedOffers);
+
+    const replaceWaypointToEditForm = (waypointEditFormComponent) => {
       this.#waypointsListComponent.element.replaceChild(waypointEditFormComponent.element, waypointComponent.element);
     };
 
-    const replaceEditFormToWaypoint = () => {
+    const replaceEditFormToWaypoint = (waypointEditFormComponent) => {
       this.#waypointsListComponent.element.replaceChild(waypointComponent.element, waypointEditFormComponent.element);
+      waypointEditFormComponent.removeElement();
+      waypointEditFormComponent = null;
       document.removeEventListener('keydown', documentKeydownHandler);
     };
 
-    waypointEditFormComponent.element.querySelector('.event--edit').addEventListener('submit', (evt) => {
-      evt.preventDefault();
-      replaceEditFormToWaypoint();
-    });
-    waypointEditFormComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
-      replaceEditFormToWaypoint();
-    });
-
     const renderWaypointEditForm = () => {
-      replaceWaypointToEditForm();
+      const waypointEditFormComponent = new EditWaypointFormView(currentWaypoint, currentDestination, currentOffers, this.#waypointsModel.destinations, this.#waypointsModel.offers);
+
+      waypointEditFormComponent.element.querySelector('.event--edit').addEventListener('submit', (evt) => {
+        evt.preventDefault();
+        replaceEditFormToWaypoint(waypointEditFormComponent);
+      });
+      waypointEditFormComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+        replaceEditFormToWaypoint(waypointEditFormComponent);
+      });
       document.addEventListener('keydown', documentKeydownHandler);
+
+      replaceWaypointToEditForm(waypointEditFormComponent);
     };
 
     waypointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
@@ -94,13 +109,15 @@ export default class TripEventsPresenter {
 
     // Обработчики
 
+    /**
+     * Обрабатывает нажатия клавиш при открытой форме редактирования
+     * @param {object} evt - event
+     */
     function documentKeydownHandler(evt) {
       if (isEscape(evt.code)) {
         evt.preventDefault();
         replaceEditFormToWaypoint();
       }
     }
-
-    // }
   }
 }
