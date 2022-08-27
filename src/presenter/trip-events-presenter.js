@@ -6,6 +6,7 @@ import EmptyListView from '../view/empty-list-view.js';
 
 import { render } from '../render.js';
 import { TRIP_EVENTS_AMOUNT } from '../consts.js';
+import { isEscape } from '../utils.js';
 
 export default class TripEventsPresenter {
   #listSortComponent = new ListSortView();
@@ -59,9 +60,9 @@ export default class TripEventsPresenter {
     }
   };
 
-  #renderWaypoint(...args) {
-    const waypointComponent = new WaypointItemView(...args);
-    const waypointEditFormComponent = new EditWaypointFormView(...args, this.#waypointsModel.destinations, this.#waypointsModel.offers);
+  #renderWaypoint(waypoint, selectedDestination, selectedOffers) {
+    const waypointComponent = new WaypointItemView(waypoint, selectedDestination, selectedOffers);
+    const waypointEditFormComponent = new EditWaypointFormView(waypoint, selectedDestination, selectedOffers, this.#waypointsModel.destinations, this.#waypointsModel.offers);
 
     const replaceWaypointToEditForm = () => {
       this.#waypointsListComponent.element.replaceChild(waypointEditFormComponent.element, waypointComponent.element);
@@ -94,7 +95,7 @@ export default class TripEventsPresenter {
     // Обработчики
 
     function documentKeydownHandler(evt) {
-      if (evt.code === 'Escape' || evt.code === 'Esc') {
+      if (isEscape(evt.code)) {
         evt.preventDefault();
         replaceEditFormToWaypoint();
       }
