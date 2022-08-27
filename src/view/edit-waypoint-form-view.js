@@ -65,11 +65,11 @@ const getEditWaypointFormTemplate = (waypoint, selectedDestination, selectedOffe
     <form class="event event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
-          <label class="event__type  event__type-btn" for="event-type-toggle-1">
+          <label class="event__type  event__type-btn" for="event-type-toggle-${waypoint.id}">
             <span class="visually-hidden">Choose event type</span>
             <img class="event__type-icon" width="17" height="17" src="img/icons/${waypoint.type}.png" alt="Event type icon">
           </label>
-          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${waypoint.id}" type="checkbox">
 
           <div class="event__type-list">
             <fieldset class="event__type-group">
@@ -134,6 +134,8 @@ const getEditWaypointFormTemplate = (waypoint, selectedDestination, selectedOffe
 );
 
 export default class EditWaypointFormView {
+  #element = null;
+
   /**
    * @param {object} waypoint - объект с информацией о месте назначения.
    * @param {object} selectedDestination - объект с информацией о выбранном месте назначения.
@@ -149,19 +151,19 @@ export default class EditWaypointFormView {
     this.offers = offers;
   }
 
-  getTemplate() {
+  get template () {
     return getEditWaypointFormTemplate(this.waypoint, this.selectedDestination, this.selectedOffers, this.destinations, this.offers);
   }
 
-  getElement() {
-    if(!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element () {
+    if(!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

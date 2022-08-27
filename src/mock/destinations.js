@@ -14,30 +14,19 @@ import {
  * @param {string} city - место назначения.
  * @returns {array} массив фотографий и описаний.
  */
-const generatePictures = (city) => {
-  const result = [];
-  for (let i = 0; i < getRandomPositiveInteger(...PICTURES_RANGE); i++) {
-    result.push({
-      src: 'http://picsum.photos/300/200?r=1',
-      description: `${city} ${PICTURES_DESCRIPTIONS[getRandomPositiveInteger(0, PICTURES_DESCRIPTIONS.length - 1)]}`,
-    });
-  }
-  return result;
-};
+const generatePictures = (city) => Array.from({length: getRandomPositiveInteger(...PICTURES_RANGE)}, () => ({
+  src: 'http://picsum.photos/300/200?r=1',
+  description: `${city} ${PICTURES_DESCRIPTIONS[getRandomPositiveInteger(0, PICTURES_DESCRIPTIONS.length - 1)]}`,
+}));
 
 /**
  * Генерирует случайные места назначения.
  * @returns {array} массив мест назначения.
  */
-export const generateDestinations = () => {
-  const result = [];
-  for (let id = 1; id <= CITIES.length; id++) {
-    result.push({
-      id,
-      name: CITIES[id - 1],
-      description: `${CITIES[id - 1]}${CITIES_DESCRIPTIONS[getRandomPositiveInteger(0, CITIES_DESCRIPTIONS.length - 1)]}`,
-      pictures: generatePictures(CITIES[id - 1]),
-    });
-  }
-  return result;
-};
+export const generateDestinations = () => Array.from({length: CITIES.length}, (_value, index) => ({
+  id: index + 1,
+  name: CITIES[index],
+  description: `${CITIES[index]}${CITIES_DESCRIPTIONS[getRandomPositiveInteger(0, CITIES_DESCRIPTIONS.length - 1)]}`,
+  pictures: generatePictures(CITIES[index])
+}));
+

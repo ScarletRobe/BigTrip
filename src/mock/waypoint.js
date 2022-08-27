@@ -27,14 +27,7 @@ const generateDate = () => {
  * Генерирует случайный набор выбранных дополнительных предложений для точки маршрута.
  * @returns {array} массив id предложений.
  */
-const getRandomOffersSet = () => {
-  const result = [];
-  const getRandomOffer = getUniqueRandomPositiveInteger(1, OFFERS_AMOUNT);
-  for (let i = 0; i < getRandomPositiveInteger(0, OFFERS_AMOUNT); i++) {
-    result.push(getRandomOffer());
-  }
-  return result;
-};
+const getRandomOffersSet = () => Array.from({length: getRandomPositiveInteger(0, OFFERS_AMOUNT)}, getUniqueRandomPositiveInteger(1, OFFERS_AMOUNT));
 
 /**
  * Генерирует случайную точку маршрута
