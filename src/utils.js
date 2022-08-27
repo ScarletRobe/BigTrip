@@ -47,8 +47,17 @@ const getUniqueRandomPositiveInteger = (min, max) => {
  */
 const humanizeDate = (date, format = 'D MMMM') => dayjs(date).format(format);
 
+
+/**
+ *
+ * @param {string} code - строка с названием клавиши
+ * @returns {boolean}
+ */
+const isEscape = (code) => (code === 'Escape' || code === 'Esc');
+
 export {
   getRandomPositiveInteger,
   getUniqueRandomPositiveInteger,
   humanizeDate,
+  isEscape,
 };
