@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 /**
  * Возвращает шаблон элемента фильтрации событий.
@@ -20,22 +20,8 @@ const getListfilterTemplate = () => (
   </form>`
 );
 
-export default class ListFilterView {
-  #element = null;
-
+export default class ListFilterView extends AbstractView {
   get template () {
     return getListfilterTemplate();
-  }
-
-  get element () {
-    if(!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
