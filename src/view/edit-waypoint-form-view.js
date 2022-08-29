@@ -153,4 +153,37 @@ export default class EditWaypointFormView extends AbstractView {
   get template () {
     return getEditWaypointFormTemplate(this.waypoint, this.selectedDestination, this.selectedOffers, this.destinations, this.offers);
   }
+
+  /**
+   * Устанавливает обработчик событий для формы редактирования
+   * @param {string} type - тип отслеживаемого события.
+   * @param {function} callback - функция, вызываемая при активации события
+   */
+  setListener (type, callback) {
+    this._handlers[type] = {
+      cb: callback,
+    };
+    switch (type) {
+      case 'submit':
+        this._handlers[type].element = '.event--edit';
+        this._handlers[type].type = 'submit';
+        break;
+      case 'clickOnRollupBtn':
+        this._handlers[type].element = '.event__rollup-btn';
+        this._handlers[type].type = 'click';
+        break;
+      default:
+        throw new Error('Unknown type of event for this view');
+    }
+    this.element.querySelector(this._handlers[type].element).addEventListener(this._handlers[type].type, this._handlers[type].cb);
+  }
+
+  /**
+   * Удаляет все обработчики события с формы редактирования
+   */
+  removeListeners () {
+    for (const handler in this._handlers) {
+      this.element.querySelector(this._handlers[handler].element).removeEventListener(this._handlers[handler].type, this._handlers[handler].cb);
+    }
+  }
 }

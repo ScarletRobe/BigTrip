@@ -82,6 +82,7 @@ export default class TripEventsPresenter {
     const replaceEditFormToWaypoint = (waypointEditFormComponent) => {
       this.#waypointsListComponent.element.replaceChild(waypointComponent.element, waypointEditFormComponent.element);
       waypointEditFormComponent.removeElement();
+      waypointEditFormComponent.removeListeners();
       waypointEditFormComponent = null;
       document.removeEventListener('keydown', documentKeydownHandler);
     };
@@ -89,13 +90,14 @@ export default class TripEventsPresenter {
     const renderWaypointEditForm = () => {
       const waypointEditFormComponent = new EditWaypointFormView(currentWaypoint, currentDestination, currentOffers, this.#waypointsModel.destinations, this.#waypointsModel.offers);
 
-      waypointEditFormComponent.element.querySelector('.event--edit').addEventListener('submit', (evt) => {
+      waypointEditFormComponent.setListener('submit', (evt) => {
         evt.preventDefault();
         replaceEditFormToWaypoint(waypointEditFormComponent);
       });
-      waypointEditFormComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+      waypointEditFormComponent.setListener('clickOnRollupBtn', () => {
         replaceEditFormToWaypoint(waypointEditFormComponent);
       });
+
       document.addEventListener('keydown', documentKeydownHandler);
 
       replaceWaypointToEditForm(waypointEditFormComponent);

@@ -14,8 +14,8 @@ export default class AbstractView {
   /** @type {HTMLElement|null} Элемент представления */
   #element = null;
 
-  /** @type {Object} Объект с колбэками. Может использоваться для хранения обработчиков событий */
-  _callback = {};
+  /** @type {Object} Объект с колбэками. Может использоваться для хранения обработчиков событий и вспомогательной информации */
+  _handlers = {};
 
   constructor() {
     if (new.target === AbstractView) {
