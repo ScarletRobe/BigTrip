@@ -103,7 +103,7 @@ export default class TripEventsPresenter {
       replaceWaypointToEditForm(waypointEditFormComponent);
     };
 
-    waypointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    waypointComponent.setListener('clickOnRollupBtn', () => {
       renderWaypointEditForm();
     });
 

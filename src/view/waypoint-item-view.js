@@ -72,4 +72,24 @@ export default class WaypointItemView extends AbstractView {
   get template () {
     return getWaypointItemTemplate(this.waypoint, this.selectedDestination, this.offers);
   }
+
+  /**
+   * Устанавливает обработчик событий для формы редактирования
+   * @param {string} type - тип отслеживаемого события.
+   * @param {function} callback - функция, вызываемая при активации события
+   */
+  setListener (type, callback) {
+    this._handlers[type] = {
+      cb: callback,
+    };
+    switch (type) {
+      case 'clickOnRollupBtn':
+        this._handlers[type].element = '.event__rollup-btn';
+        this._handlers[type].type = 'click';
+        break;
+      default:
+        throw new Error('Unknown type of event for this view');
+    }
+    this.element.querySelector(this._handlers[type].element).addEventListener(this._handlers[type].type, this._handlers[type].cb);
+  }
 }
