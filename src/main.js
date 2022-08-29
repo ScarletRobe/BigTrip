@@ -4,8 +4,7 @@ import TripEventsPresenter from './presenter/trip-events-presenter.js';
 
 import WaypointsModel from './model/waypoints-model.js';
 
-import { render } from './render.js';
-
+import { render } from './framework/render.js';
 // Элементы DOM
 
 const filtersContainerElement = document.querySelector('.trip-controls__filters');

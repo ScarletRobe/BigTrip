@@ -4,7 +4,7 @@ import WaypointItemView from '../view/waypoint-item-view.js';
 import EditWaypointFormView from '../view/edit-waypoint-form-view.js';
 import EmptyListView from '../view/empty-list-view.js';
 
-import { render } from '../render.js';
+import { render } from '../framework/render.js';
 import { TRIP_EVENTS_AMOUNT } from '../consts.js';
 import { isEscape } from '../utils.js';
 
