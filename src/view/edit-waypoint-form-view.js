@@ -177,13 +177,4 @@ export default class EditWaypointFormView extends AbstractView {
     }
     this.element.querySelector(this._handlers[type].element).addEventListener(this._handlers[type].type, this._handlers[type].cb);
   }
-
-  /**
-   * Удаляет все обработчики события с формы редактирования
-   */
-  removeListeners () {
-    for (const handler in this._handlers) {
-      this.element.querySelector(this._handlers[handler].element).removeEventListener(this._handlers[handler].type, this._handlers[handler].cb);
-    }
-  }
 }

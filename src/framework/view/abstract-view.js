@@ -50,6 +50,15 @@ export default class AbstractView {
   }
 
   /**
+   * Удаляет все обработчики события с формы редактирования
+   */
+  removeListeners () {
+    for (const handler in this._handlers) {
+      this.element.querySelector(this._handlers[handler].element).removeEventListener(this._handlers[handler].type, this._handlers[handler].cb);
+    }
+  }
+
+  /**
    * Метод, реализующий эффект "покачивания головой"
    * @param {shakeCallback} [callback] Функция, которая будет вызвана после завершения анимации
    */
