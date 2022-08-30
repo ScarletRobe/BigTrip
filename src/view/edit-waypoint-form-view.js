@@ -1,55 +1,8 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeDate } from '../utils.js';
-
-/**
- * Генерирует вспомогательные опции к инпуту ввода города.
- * @param {array} destinations - массив мест назначений.
- * @returns {string} строка с HTML кодом.
- */
-const getDestinationListOptions = (destinations) => destinations.map((destination) => (`<option value="${destination.name}"></option>`)).join('\n');
-
-/**
- * Генерирует опции для инпута выбора события.
- * @param {string} selectedType - выбранный тип события.
- * @param {array} offers - массив всех типов событий и дополнительных предложений.
- * @returns {string} строка с HTML кодом.
- */
-const getEventTypeItems = (selectedType, offers) => offers.map((offer) => {
-  const checked = offer.type === selectedType ? 'checked' : '';
-
-  return (
-    `<div class="event__type-item">
-      <input id="event-type-${offer.type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${offer.type}" ${checked}>
-      <label class="event__type-label  event__type-label--${offer.type}" for="event-type-${offer.type}-1">${offer.type}</label>
-    </div>`
-  );
-}).join('\n');
-
-/**
- * Генерирует опции для формы выбора дополнительных предложений.
- * @param {string} selectedType - выбранный тип события.
- * @param {array} selectedOffers - массив id выбранных дополнительных предложений.
- * @param {array} offers - массив всех типов событий и дополнительных предложений.
- * @returns {string} строка с HTML кодом.
- */
-const getEventAvailableOffers = (selectedType, selectedOffers, offers) => {
-  const offersByType = offers.find((offer) => offer.type === selectedType);
-
-  return offersByType.offers.map((offer) => {
-    const checked = selectedOffers.some((off) => offer.id === off.id) ? 'checked' : '';
-    const offerTitlteWithoutSpaces = offer.title.replaceAll(' ', '-');
-    return (
-      `<div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerTitlteWithoutSpaces}-1" type="checkbox" name="event-offer-${offerTitlteWithoutSpaces}" ${checked}>
-          <label class="event__offer-label" for="event-offer-${offerTitlteWithoutSpaces}-1">
-            <span class="event__offer-title">${offer.title}</span>
-            &plus;&euro;&nbsp;
-            <span class="event__offer-price">${offer.price}</span>
-          </label>
-      </div>`
-    );
-  }).join('\n');
-};
+import { getDestinationListOptions } from './templates/destination-list-options.js';
+import { getEventTypeItems } from './templates/event-type-items.js';
+import { getEventAvailableOffers } from './templates/event-available-offers.js';
 
 /**
  * Генерирует форму редактирования события.
