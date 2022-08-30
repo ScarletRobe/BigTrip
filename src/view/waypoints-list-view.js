@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 /**
  * Возвращает шаблон контейнера для списка мест назначений.
@@ -9,22 +9,8 @@ const getWaypointsListTemplate = () => (
   </ul>`
 );
 
-export default class WaypointsListView {
-  #element = null;
-
+export default class WaypointsListView extends AbstractView {
   get template () {
     return getWaypointsListTemplate();
-  }
-
-  get element () {
-    if(!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

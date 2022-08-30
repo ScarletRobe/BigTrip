@@ -4,7 +4,7 @@ import WaypointItemView from '../view/waypoint-item-view.js';
 import EditWaypointFormView from '../view/edit-waypoint-form-view.js';
 import EmptyListView from '../view/empty-list-view.js';
 
-import { render } from '../render.js';
+import { render, replace } from '../framework/render.js';
 import { TRIP_EVENTS_AMOUNT } from '../consts.js';
 import { isEscape } from '../utils.js';
 
@@ -76,12 +76,13 @@ export default class TripEventsPresenter {
     const waypointComponent = new WaypointItemView(waypoint, selectedDestination, selectedOffers);
 
     const replaceWaypointToEditForm = (waypointEditFormComponent) => {
-      this.#waypointsListComponent.element.replaceChild(waypointEditFormComponent.element, waypointComponent.element);
+      replace(waypointEditFormComponent, waypointComponent);
     };
 
     const replaceEditFormToWaypoint = (waypointEditFormComponent) => {
-      this.#waypointsListComponent.element.replaceChild(waypointComponent.element, waypointEditFormComponent.element);
+      replace(waypointComponent, waypointEditFormComponent);
       waypointEditFormComponent.removeElement();
+      waypointEditFormComponent.removeListeners();
       waypointEditFormComponent = null;
       document.removeEventListener('keydown', documentKeydownHandler);
     };
@@ -89,19 +90,20 @@ export default class TripEventsPresenter {
     const renderWaypointEditForm = () => {
       const waypointEditFormComponent = new EditWaypointFormView(currentWaypoint, currentDestination, currentOffers, this.#waypointsModel.destinations, this.#waypointsModel.offers);
 
-      waypointEditFormComponent.element.querySelector('.event--edit').addEventListener('submit', (evt) => {
+      waypointEditFormComponent.setListener('submit', (evt) => {
         evt.preventDefault();
         replaceEditFormToWaypoint(waypointEditFormComponent);
       });
-      waypointEditFormComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+      waypointEditFormComponent.setListener('clickOnRollupBtn', () => {
         replaceEditFormToWaypoint(waypointEditFormComponent);
       });
+
       document.addEventListener('keydown', documentKeydownHandler);
 
       replaceWaypointToEditForm(waypointEditFormComponent);
     };
 
-    waypointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    waypointComponent.setListener('clickOnRollupBtn', () => {
       renderWaypointEditForm();
     });
 

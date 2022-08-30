@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeDate } from '../utils.js';
 
 /**
@@ -133,9 +133,7 @@ const getEditWaypointFormTemplate = (waypoint, selectedDestination, selectedOffe
   </li>`
 );
 
-export default class EditWaypointFormView {
-  #element = null;
-
+export default class EditWaypointFormView extends AbstractView {
   /**
    * @param {object} waypoint - объект с информацией о месте назначения.
    * @param {object} selectedDestination - объект с информацией о выбранном месте назначения.
@@ -144,6 +142,7 @@ export default class EditWaypointFormView {
    * @param {array} offers - массив всех типов событий и дополнительных предложений.
    */
   constructor(waypoint, selectedDestination, selectedOffers, destinations, offers) {
+    super();
     this.waypoint = waypoint;
     this.selectedDestination = selectedDestination;
     this.selectedOffers = selectedOffers;
@@ -155,15 +154,27 @@ export default class EditWaypointFormView {
     return getEditWaypointFormTemplate(this.waypoint, this.selectedDestination, this.selectedOffers, this.destinations, this.offers);
   }
 
-  get element () {
-    if(!this.#element) {
-      this.#element = createElement(this.template);
+  /**
+   * Устанавливает обработчик событий для формы редактирования
+   * @param {string} type - тип отслеживаемого события.
+   * @param {function} callback - функция, вызываемая при активации события
+   */
+  setListener (type, callback) {
+    this._handlers[type] = {
+      cb: callback,
+    };
+    switch (type) {
+      case 'submit':
+        this._handlers[type].element = '.event--edit';
+        this._handlers[type].type = 'submit';
+        break;
+      case 'clickOnRollupBtn':
+        this._handlers[type].element = '.event__rollup-btn';
+        this._handlers[type].type = 'click';
+        break;
+      default:
+        throw new Error('Unknown type of event for this view');
     }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
+    this.element.querySelector(this._handlers[type].element).addEventListener(this._handlers[type].type, this._handlers[type].cb);
   }
 }

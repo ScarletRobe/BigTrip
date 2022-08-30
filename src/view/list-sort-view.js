@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 /**
  * Возвращает шаблон элемента сортировки событий.
@@ -33,22 +33,8 @@ const getListSortElement = () => (
   </form>`
 );
 
-export default class ListSortView {
-  #element = null;
-
+export default class ListSortView extends AbstractView{
   get template () {
     return getListSortElement();
-  }
-
-  get element () {
-    if(!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
