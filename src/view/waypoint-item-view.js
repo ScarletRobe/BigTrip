@@ -6,19 +6,13 @@ import { humanizeDate } from '../utils.js';
  * @param {array} offers - массив всех типов событий и дополнительных предложений.
  * @returns {string} строка с HTML кодом.
  */
-const getEventOffers = (offers) => {
-  let result = '';
-  offers.forEach((offer) => {
-    result += (
-      `<li class="event__offer">
-        <span class="event__offer-title">${offer.title}</span>
-        &plus;&euro;&nbsp;
-        <span class="event__offer-price">${offer.price}</span>
-      </li>`
-    );
-  });
-  return result;
-};
+const getEventOffers = (offers) => offers.map((offer) => (
+  `<li class="event__offer">
+    <span class="event__offer-title">${offer.title}</span>
+    &plus;&euro;&nbsp;
+    <span class="event__offer-price">${offer.price}</span>
+  </li>`
+)).join('\n');
 
 /**
  * Генерирует полную информацию о месте назначения.
