@@ -9,7 +9,7 @@ import { TRIP_EVENTS_AMOUNT } from '../consts.js';
 import { isEscape } from '../utils.js';
 
 export default class TripEventsPresenter {
-  #listSortComponent = new ListSortView();
+  #listSortComponent = null;
   #waypointsListComponent = new WaypointsListView();
 
   #container = null;
@@ -22,6 +22,7 @@ export default class TripEventsPresenter {
   constructor(container, waypointsModel) {
     this.#container = container;
     this.#waypointsModel = waypointsModel;
+    this.#listSortComponent = new ListSortView(this.#waypointsModel.waypoints.length);
   }
 
   /**
