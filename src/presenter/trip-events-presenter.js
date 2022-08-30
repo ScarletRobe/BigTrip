@@ -82,8 +82,8 @@ export default class TripEventsPresenter {
 
     const replaceEditFormToWaypoint = (waypointEditFormComponent) => {
       replace(waypointComponent, waypointEditFormComponent);
-      waypointEditFormComponent.removeElement();
       waypointEditFormComponent.removeListeners();
+      waypointEditFormComponent.removeElement();
       waypointEditFormComponent = null;
       document.removeEventListener('keydown', documentKeydownHandler);
     };
