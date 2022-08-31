@@ -30,7 +30,7 @@ export default class TripEventsPresenter {
    * @param {object} waypoint - объект с информацией о месте назначения..
    * @returns {object} объект с информацией о выбранном месте назначения.
    */
-  getSelectedDestination(waypoint) {
+  #getSelectedDestination(waypoint) {
     return this.#waypointsModel.destinations.find((dest) => dest.id === waypoint.destination);
   }
 
@@ -39,7 +39,7 @@ export default class TripEventsPresenter {
    * @param {object} waypoint - объект с информацией о месте назначения.
    * @returns {array} массив объектов.
    */
-  getSelectedOffers(waypoint) {
+  #getSelectedOffers(waypoint) {
     const offersList = this.#waypointsModel.offers.find((offer) => offer.type === waypoint.type);
     const offers = [];
     waypoint.offers.forEach((offerId) => {
@@ -59,7 +59,7 @@ export default class TripEventsPresenter {
       render(new EmptyListView(), this.#container);
     }
     for (let i = 0; i < TRIP_EVENTS_AMOUNT; i++) {
-      this.#renderWaypoint(this.#waypointsModel.waypoints[i], this.getSelectedDestination(this.#waypointsModel.waypoints[i]), this.getSelectedOffers(this.#waypointsModel.waypoints[i]));
+      this.#renderWaypoint(this.#waypointsModel.waypoints[i], this.#getSelectedDestination(this.#waypointsModel.waypoints[i]), this.#getSelectedOffers(this.#waypointsModel.waypoints[i]));
     }
   };
 
