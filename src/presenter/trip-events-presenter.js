@@ -14,6 +14,8 @@ export default class TripEventsPresenter {
   #container = null;
   #waypointsModel = null;
 
+  #waypointPresentersList = new Set();
+
   /**
    * @param {object} container - DOM элемент, в который будут помещены все элементы, созданные в ходе работы.
    * @param {object} waypointsModel - Модель, содержащая всю информацию о местах назначения.
@@ -44,7 +46,14 @@ export default class TripEventsPresenter {
    * @param {object} waypoint - объект с информацией о месте назначения.
    */
   #renderWaypoint(waypoint) {
-    const waypointPresenter = new WaypointPresenter(this.#waypointsModel, this.#waypointsListComponent.element);
+    const waypointPresenter = new WaypointPresenter(this.#waypointsModel, this.#waypointsListComponent.element, this.#waypointModeChange);
+    this.#waypointPresentersList.add(waypointPresenter);
     waypointPresenter.init(waypoint);
   }
+
+  #waypointModeChange = () => {
+    this.#waypointPresentersList.forEach((presenter) => {
+      presenter.resetView();
+    });
+  };
 }

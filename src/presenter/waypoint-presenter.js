@@ -15,11 +15,12 @@ export default class WaypointPresenter {
   #selectedDestination = null;
   #selectedOffers = null;
 
-  #bindedDocumentKeydownHandler = null;
+  #modeChangeHandler = null;
 
-  constructor(waypointsModel, container) {
+  constructor(waypointsModel, container, modeChangeHandler) {
     this.#waypointsModel = waypointsModel;
     this.#container = container;
+    this.#modeChangeHandler = modeChangeHandler;
   }
 
   /**
@@ -53,8 +54,8 @@ export default class WaypointPresenter {
     replace(this.#waypointComponent, waypointEditFormComponent);
     waypointEditFormComponent.removeListeners();
     waypointEditFormComponent.removeElement();
-    waypointEditFormComponent = null;
-    document.removeEventListener('keydown', this.#bindedDocumentKeydownHandler);
+    this.#waypointEditFormComponent = null;
+    document.removeEventListener('keydown', this.#documentKeydownHandler);
   }
 
   #renderWaypointEditForm() {
@@ -68,8 +69,7 @@ export default class WaypointPresenter {
       this.#replaceEditFormToWaypoint(this.#waypointEditFormComponent);
     });
 
-    this.#bindedDocumentKeydownHandler = this.#documentKeydownHandler.bind(this);
-    document.addEventListener('keydown', this.#bindedDocumentKeydownHandler);
+    document.addEventListener('keydown', this.#documentKeydownHandler);
 
     this.#replaceWaypointToEditForm(this.#waypointEditFormComponent);
   }
@@ -77,10 +77,17 @@ export default class WaypointPresenter {
   #renderWaypointItem(waypoint, selectedDestination, selectedOffers) {
     this.#waypointComponent = new WaypointItemView(waypoint, selectedDestination, selectedOffers);
     this.#waypointComponent.setListener('clickOnRollupBtn', () => {
+      this.#modeChangeHandler();
       this.#renderWaypointEditForm();
     });
 
     render(this.#waypointComponent, this.#container);
+  }
+
+  resetView() {
+    if(this.#waypointEditFormComponent) {
+      this.#replaceEditFormToWaypoint(this.#waypointEditFormComponent);
+    }
   }
 
   init(waypoint) {
@@ -93,10 +100,10 @@ export default class WaypointPresenter {
 
   // Обработчики
 
-  #documentKeydownHandler(evt) {
+  #documentKeydownHandler = (evt) => {
     if (isEscape(evt.code)) {
       evt.preventDefault();
       this.#replaceEditFormToWaypoint(this.#waypointEditFormComponent);
     }
-  }
+  };
 }
