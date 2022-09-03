@@ -61,13 +61,8 @@ export default class WaypointPresenter {
   #renderWaypointEditForm() {
     this.#waypointEditFormComponent = new EditWaypointFormView(this.#waypoint, this.#selectedDestination, this.#selectedOffers, this.#waypointsModel.destinations, this.#waypointsModel.offers);
 
-    this.#waypointEditFormComponent.setListener('submit', (evt) => {
-      evt.preventDefault();
-      this.#replaceEditFormToWaypoint(this.#waypointEditFormComponent);
-    });
-    this.#waypointEditFormComponent.setListener('clickOnRollupBtn', () => {
-      this.#replaceEditFormToWaypoint(this.#waypointEditFormComponent);
-    });
+    this.#waypointEditFormComponent.setListener('submit', this.#waypointEditFormSubmitHandler);
+    this.#waypointEditFormComponent.setListener('clickOnRollupBtn', this.#waypointEditFormRollupBtnClickHandler);
 
     document.addEventListener('keydown', this.#documentKeydownHandler);
 
@@ -76,10 +71,7 @@ export default class WaypointPresenter {
 
   #renderWaypointItem(waypoint, selectedDestination, selectedOffers) {
     this.#waypointComponent = new WaypointItemView(waypoint, selectedDestination, selectedOffers);
-    this.#waypointComponent.setListener('clickOnRollupBtn', () => {
-      this.#modeChangeHandler();
-      this.#renderWaypointEditForm();
-    });
+    this.#waypointComponent.setListener('clickOnRollupBtn', this.#waypointRollupBtnClickHandler);
 
     render(this.#waypointComponent, this.#container);
   }
@@ -105,5 +97,19 @@ export default class WaypointPresenter {
       evt.preventDefault();
       this.#replaceEditFormToWaypoint(this.#waypointEditFormComponent);
     }
+  };
+
+  #waypointRollupBtnClickHandler = () => {
+    this.#modeChangeHandler();
+    this.#renderWaypointEditForm();
+  };
+
+  #waypointEditFormRollupBtnClickHandler = () => {
+    this.#replaceEditFormToWaypoint(this.#waypointEditFormComponent);
+  };
+
+  #waypointEditFormSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#replaceEditFormToWaypoint(this.#waypointEditFormComponent);
   };
 }

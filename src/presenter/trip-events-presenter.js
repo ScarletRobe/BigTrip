@@ -27,7 +27,7 @@ export default class TripEventsPresenter {
   }
 
   /**
-   * Отрисовывывает базовые элементы.
+   * Отрисовывает базовые элементы.
    */
   init = () => {
     render(this.#listSortComponent, this.#container);
