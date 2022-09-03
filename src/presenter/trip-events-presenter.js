@@ -26,20 +26,17 @@ export default class TripEventsPresenter {
     this.#listSortComponent = new ListSortView(this.#waypointsModel.waypoints.length);
   }
 
-  /**
-   * Отрисовывает базовые элементы.
-   */
-  init = () => {
+  #renderSort() {
     render(this.#listSortComponent, this.#container);
-    render(this.#waypointsListComponent, this.#container);
+  }
 
-    if (!this.#waypointsModel.waypoints.length) {
-      render(new EmptyListView(), this.#container);
-    }
-    for (let i = 0; i < TRIP_EVENTS_AMOUNT; i++) {
-      this.#renderWaypoint(this.#waypointsModel.waypoints[i]);
-    }
-  };
+  #renderWaypointsList() {
+    render(this.#waypointsListComponent, this.#container);
+  }
+
+  #renderEmptyList() {
+    render(new EmptyListView(), this.#container);
+  }
 
   /**
    * Создает презентер под отдельную точку маршрута.
@@ -50,6 +47,21 @@ export default class TripEventsPresenter {
     this.#waypointPresentersList.add(waypointPresenter);
     waypointPresenter.init(waypoint);
   }
+
+  /**
+   * Отрисовывает базовые элементы.
+   */
+  init = () => {
+    this.#renderSort();
+    this.#renderWaypointsList();
+
+    if (!this.#waypointsModel.waypoints.length) {
+      this.#renderEmptyList();
+    }
+    for (let i = 0; i < TRIP_EVENTS_AMOUNT; i++) {
+      this.#renderWaypoint(this.#waypointsModel.waypoints[i]);
+    }
+  };
 
   #waypointModeChangeHandler = () => {
     this.#waypointPresentersList.forEach((presenter) => {
