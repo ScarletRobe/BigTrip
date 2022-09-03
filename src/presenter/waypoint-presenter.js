@@ -17,6 +17,12 @@ export default class WaypointPresenter {
 
   #modeChangeHandler = null;
 
+  /**
+   *
+   * @param {object} waypointsModel - Модель, содержащая всю информацию о местах назначения.
+   * @param {object} container - DOM элемент, в который будут помещены все элементы, созданные в ходе работы.
+   * @param {function} modeChangeHandler - колбэк, вызываемый при открытии формы редактирования
+   */
   constructor(waypointsModel, container, modeChangeHandler) {
     this.#waypointsModel = waypointsModel;
     this.#container = container;
@@ -69,6 +75,12 @@ export default class WaypointPresenter {
     this.#replaceWaypointToEditForm(this.#waypointEditFormComponent);
   }
 
+  /**
+   *
+   * @param {object} waypoint - объект с информацией о месте назначения.
+   * @param {object} selectedDestination - объект с информацией о выбранном месте назначения.
+   * @param {array} selectedOffers - массив выбранных дополнительных предложений.
+   */
   #renderWaypointItem(waypoint, selectedDestination, selectedOffers) {
     this.#waypointComponent = new WaypointItemView(waypoint, selectedDestination, selectedOffers);
     this.#waypointComponent.setListener('clickOnRollupBtn', this.#waypointRollupBtnClickHandler);
@@ -82,6 +94,10 @@ export default class WaypointPresenter {
     }
   }
 
+  /**
+   * Отрисовывает точку маршрута
+   * @param {object} waypoint - объект с информацией о месте назначения.
+   */
   init(waypoint) {
     this.#waypoint = waypoint;
     this.#selectedDestination = this.#getSelectedDestination(waypoint);

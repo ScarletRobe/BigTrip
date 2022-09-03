@@ -42,16 +42,16 @@ export default class TripEventsPresenter {
   };
 
   /**
-   *
+   * Создает презентер под отдельную точку маршрута.
    * @param {object} waypoint - объект с информацией о месте назначения.
    */
   #renderWaypoint(waypoint) {
-    const waypointPresenter = new WaypointPresenter(this.#waypointsModel, this.#waypointsListComponent.element, this.#waypointModeChange);
+    const waypointPresenter = new WaypointPresenter(this.#waypointsModel, this.#waypointsListComponent.element, this.#waypointModeChangeHandler);
     this.#waypointPresentersList.add(waypointPresenter);
     waypointPresenter.init(waypoint);
   }
 
-  #waypointModeChange = () => {
+  #waypointModeChangeHandler = () => {
     this.#waypointPresentersList.forEach((presenter) => {
       presenter.resetView();
     });
