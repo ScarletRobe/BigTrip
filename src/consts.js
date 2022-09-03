@@ -1,3 +1,5 @@
+// Mock
+
 const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 
 // Waypoint
@@ -17,6 +19,10 @@ const PICTURES_RANGE = [1, 10];
 
 const TRIP_EVENTS_AMOUNT = 10;
 
+//
+
+const SORT_OPTIONS = ['day', 'event', 'time', 'price', 'offers'];
+
 export {
   TYPES,
   OFFERS,
@@ -29,4 +35,5 @@ export {
   BASE_PRICE_RANGE,
   DATE,
   OFFERS_AMOUNT,
+  SORT_OPTIONS,
 };

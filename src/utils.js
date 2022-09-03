@@ -55,9 +55,17 @@ const humanizeDate = (date, format = 'D MMMM') => dayjs(date).format(format);
  */
 const isEscape = (code) => (code === 'Escape' || code === 'Esc');
 
+/**
+ * Меняет первую букву строки на заглавную.
+ * @param {string} string - текст
+ * @returns {string} измененная строка
+ */
+const capitalizeFirstLetter = (string) => string[0].toUpperCase() + string.slice(1);
+
 export {
   getRandomPositiveInteger,
   getUniqueRandomPositiveInteger,
   humanizeDate,
   isEscape,
+  capitalizeFirstLetter,
 };
