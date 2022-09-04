@@ -14,7 +14,7 @@ export default class TripEventsPresenter {
   #container = null;
   #waypointsModel = null;
 
-  #waypointPresentersList = new Set();
+  #waypointPresentersList = new Map();
 
   /**
    * @param {object} container - DOM элемент, в который будут помещены все элементы, созданные в ходе работы.
@@ -44,7 +44,7 @@ export default class TripEventsPresenter {
    */
   #renderWaypoint(waypoint) {
     const waypointPresenter = new WaypointPresenter(this.#waypointsModel, this.#waypointsListComponent.element, this.#waypointModeChangeHandler);
-    this.#waypointPresentersList.add(waypointPresenter);
+    this.#waypointPresentersList.set(waypoint.id, waypointPresenter);
     waypointPresenter.init(waypoint);
   }
 
