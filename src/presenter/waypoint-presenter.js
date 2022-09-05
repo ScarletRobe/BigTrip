@@ -16,17 +16,20 @@ export default class WaypointPresenter {
   #selectedOffers = null;
 
   #modeChangeHandler = null;
+  #waypointUpdateHandler = null;
 
   /**
    *
-   * @param {object} waypointsModel - Модель, содержащая всю информацию о местах назначения.
+   * @param {object} waypointsModel - Модель, содержащая всю информацию о точках маршрута.
    * @param {object} container - DOM элемент, в который будут помещены все элементы, созданные в ходе работы.
    * @param {function} modeChangeHandler - колбэк, вызываемый при открытии формы редактирования
+   * @param {function} waypointUpdateHandler - колбэк, вызываемый при изменении данных о точке маршрута.
    */
-  constructor(waypointsModel, container, modeChangeHandler) {
+  constructor(waypointsModel, container, modeChangeHandler, waypointUpdateHandler) {
     this.#waypointsModel = waypointsModel;
     this.#container = container;
     this.#modeChangeHandler = modeChangeHandler;
+    this.#waypointUpdateHandler = waypointUpdateHandler;
   }
 
   /**
@@ -88,14 +91,9 @@ export default class WaypointPresenter {
     render(this.#waypointComponent, this.#container);
   }
 
-  destroyWaypoint(mode = false) {
+  destroyWaypoint() {
     remove(this.#waypointComponent);
     remove(this.#waypointEditFormComponent);
-
-    if (mode) {
-      this.#waypointComponent = null;
-      this.#waypointEditFormComponent = null;
-    }
   }
 
   resetView() {
@@ -109,11 +107,27 @@ export default class WaypointPresenter {
    * @param {object} waypoint - объект с информацией о месте назначения.
    */
   init(waypoint) {
+    const prevWaypointComponent = this.#waypointComponent;
+    const prevWaypointEditFormComponent = this.#waypointEditFormComponent;
+
     this.#waypoint = waypoint;
     this.#selectedDestination = this.#getSelectedDestination(waypoint);
     this.#selectedOffers = this.#getSelectedOffers(waypoint);
 
-    this.#renderWaypointItem(this.#waypoint, this.#selectedDestination, this.#selectedOffers);
+    if (prevWaypointComponent === null || prevWaypointEditFormComponent === null) {
+      this.#renderWaypointItem(this.#waypoint, this.#selectedDestination, this.#selectedOffers);
+      return;
+    }
+
+    if (prevWaypointEditFormComponent) {
+      replace(this.#waypointEditFormComponent, prevWaypointEditFormComponent);
+      remove(prevWaypointEditFormComponent);
+      remove(prevWaypointComponent);
+      return;
+    }
+
+    replace(this.#waypointComponent, prevWaypointComponent);
+    remove(prevWaypointComponent);
   }
 
   // Обработчики
@@ -136,6 +150,7 @@ export default class WaypointPresenter {
 
   #waypointEditFormSubmitHandler = (evt) => {
     evt.preventDefault();
+    this.#waypointUpdateHandler(this.#waypoint);
     this.#replaceEditFormToWaypoint(this.#waypointEditFormComponent);
   };
 }

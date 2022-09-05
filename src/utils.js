@@ -62,10 +62,25 @@ const isEscape = (code) => (code === 'Escape' || code === 'Esc');
  */
 const capitalizeFirstLetter = (string) => string[0].toUpperCase() + string.slice(1);
 
+const changeArrayItem = (arr, updatedItem) => {
+  const index = arr.findIndex((item) => item.id === updatedItem.id);
+
+  if (index === -1) {
+    return arr;
+  }
+
+  return [
+    ...arr.slice(0, index),
+    updatedItem,
+    ...arr.slice(updatedItem + 1)
+  ];
+};
+
 export {
   getRandomPositiveInteger,
   getUniqueRandomPositiveInteger,
   humanizeDate,
   isEscape,
   capitalizeFirstLetter,
+  changeArrayItem,
 };

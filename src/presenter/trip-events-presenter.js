@@ -6,6 +6,7 @@ import WaypointPresenter from './waypoint-presenter.js';
 
 import { render } from '../framework/render.js';
 import { TRIP_EVENTS_AMOUNT } from '../consts.js';
+import { changeArrayItem } from '../utils.js';
 
 export default class TripEventsPresenter {
   #listSortComponent = null;
@@ -43,7 +44,7 @@ export default class TripEventsPresenter {
    * @param {object} waypoint - объект с информацией о месте назначения.
    */
   #renderWaypoint(waypoint) {
-    const waypointPresenter = new WaypointPresenter(this.#waypointsModel, this.#waypointsListComponent.element, this.#waypointModeChangeHandler);
+    const waypointPresenter = new WaypointPresenter(this.#waypointsModel, this.#waypointsListComponent.element, this.#waypointModeChangeHandler, this.#waypointUpdateHandler);
     this.#waypointPresentersList.set(waypoint.id, waypointPresenter);
     waypointPresenter.init(waypoint);
   }
@@ -54,6 +55,17 @@ export default class TripEventsPresenter {
     });
     this.#waypointPresentersList.clear();
   }
+
+  #waypointUpdateHandler = (updatedWaypoint) => {
+    this.#waypointsModel.waypoints = changeArrayItem(this.#waypointsModel.waypoints, updatedWaypoint);
+    this.#waypointPresentersList.get(updatedWaypoint.id).init(updatedWaypoint);
+  };
+
+  #waypointModeChangeHandler = () => {
+    this.#waypointPresentersList.forEach((presenter) => {
+      presenter.resetView();
+    });
+  };
 
   /**
    * Отрисовывает базовые элементы.
@@ -70,11 +82,4 @@ export default class TripEventsPresenter {
     }
   }
 
-  // Обработчики
-
-  #waypointModeChangeHandler = () => {
-    this.#waypointPresentersList.forEach((presenter) => {
-      presenter.resetView();
-    });
-  };
 }
