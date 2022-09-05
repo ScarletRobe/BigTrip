@@ -1,7 +1,7 @@
 import EditWaypointFormView from '../view/edit-waypoint-form-view.js';
 import WaypointItemView from '../view/waypoint-item-view.js';
 
-import { render, replace } from '../framework/render.js';
+import { render, replace, remove } from '../framework/render.js';
 import { isEscape } from '../utils.js';
 
 export default class WaypointPresenter {
@@ -86,6 +86,16 @@ export default class WaypointPresenter {
     this.#waypointComponent.setListener('clickOnRollupBtn', this.#waypointRollupBtnClickHandler);
 
     render(this.#waypointComponent, this.#container);
+  }
+
+  destroyWaypoint(mode = false) {
+    remove(this.#waypointComponent);
+    remove(this.#waypointEditFormComponent);
+
+    if (mode) {
+      this.#waypointComponent = null;
+      this.#waypointEditFormComponent = null;
+    }
   }
 
   resetView() {

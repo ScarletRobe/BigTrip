@@ -48,10 +48,17 @@ export default class TripEventsPresenter {
     waypointPresenter.init(waypoint);
   }
 
+  #clearWaypointsList() {
+    this.#waypointPresentersList.forEach((presenter) => {
+      presenter.destroyWaypoint();
+    });
+    this.#waypointPresentersList.clear();
+  }
+
   /**
    * Отрисовывает базовые элементы.
    */
-  init = () => {
+  init() {
     this.#renderSort();
     this.#renderWaypointsList();
 
@@ -61,7 +68,9 @@ export default class TripEventsPresenter {
     for (let i = 0; i < TRIP_EVENTS_AMOUNT; i++) {
       this.#renderWaypoint(this.#waypointsModel.waypoints[i]);
     }
-  };
+  }
+
+  // Обработчики
 
   #waypointModeChangeHandler = () => {
     this.#waypointPresentersList.forEach((presenter) => {
