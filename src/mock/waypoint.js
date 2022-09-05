@@ -12,6 +12,7 @@ import {
 } from '../utils.js';
 
 import dayjs from 'dayjs';
+import { nanoid } from 'nanoid';
 
 /**
  * Генерирует случайные даты прибытия и отправления.
@@ -34,10 +35,10 @@ const getRandomOffersSet = () => Array.from({length: getRandomPositiveInteger(0,
  * @param {number} id - id точки маршрута
  * @returns {object} объект с информацией о точке маршрута.
  */
-export const generateWaypoint = (id = 0) => {
+export const generateWaypoint = () => {
   const date = generateDate();
   return {
-    id,
+    id: nanoid(),
     type: TYPES[getRandomPositiveInteger(0,TYPES.length - 1)],
     dateFrom: date.dateFrom,
     dateTo: date.dateTo,

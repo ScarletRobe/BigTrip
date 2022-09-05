@@ -90,7 +90,7 @@ export default class EditWaypointFormView extends AbstractView {
   /**
    * @param {object} waypoint - объект с информацией о месте назначения.
    * @param {object} selectedDestination - объект с информацией о выбранном месте назначения.
-   * @param {array} selectedOffers - массив id выбранных дополнительных предложений.
+   * @param {array} selectedOffers - массив выбранных дополнительных предложений.
    * @param {array} destinations - массив мест назначений.
    * @param {array} offers - массив всех типов событий и дополнительных предложений.
    */
