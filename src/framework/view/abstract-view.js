@@ -14,8 +14,8 @@ export default class AbstractView {
   /** @type {HTMLElement|null} Элемент представления */
   #element = null;
 
-  /** @type {Object} Объект с колбэками. Может использоваться для хранения обработчиков событий */
-  _callback = {};
+  /** @type {Object} Объект с колбэками. Может использоваться для хранения обработчиков событий и вспомогательной информации */
+  _handlers = {};
 
   constructor() {
     if (new.target === AbstractView) {
@@ -47,6 +47,15 @@ export default class AbstractView {
   /** Метод для удаления элемента */
   removeElement() {
     this.#element = null;
+  }
+
+  /**
+   * Удаляет все обработчики события с формы редактирования
+   */
+  removeListeners () {
+    for (const handler in this._handlers) {
+      this.element.querySelector(this._handlers[handler].element).removeEventListener(this._handlers[handler].type, this._handlers[handler].cb);
+    }
   }
 
   /**
