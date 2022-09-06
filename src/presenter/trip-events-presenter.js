@@ -32,9 +32,9 @@ export default class TripEventsPresenter {
 
   #sortByDay() {
     if (this.#waypointsSortedByDay) {
-
       this.#clearWaypointsList();
       this.#renderWaypoints(this.#waypointsSortedByDay);
+      return;
     }
 
     const result = this.#waypointsModel.waypoints.slice();
@@ -49,6 +49,7 @@ export default class TripEventsPresenter {
     if (this.#waypointsSortedByPrice) {
       this.#clearWaypointsList();
       this.#renderWaypoints(this.#waypointsSortedByPrice);
+      return;
     }
 
     const result = this.#waypointsModel.waypoints.slice();
@@ -91,6 +92,10 @@ export default class TripEventsPresenter {
     this.#waypointPresentersList.clear();
   }
 
+  /**
+   * Реагирует на обновление точки маршрута и заменяет старую на новую.
+   * @param {object} updatedWaypoint - обновленная точка маршрута.
+   */
   #waypointUpdateHandler = (updatedWaypoint) => {
     this.#waypointsModel.waypoints = changeArrayItem(this.#waypointsModel.waypoints, updatedWaypoint);
     this.#waypointPresentersList.get(updatedWaypoint.id).init(updatedWaypoint);
