@@ -72,7 +72,7 @@ const changeArrayItem = (arr, updatedItem) => {
   return [
     ...arr.slice(0, index),
     updatedItem,
-    ...arr.slice(updatedItem + 1)
+    ...arr.slice(index + 1)
   ];
 };
 

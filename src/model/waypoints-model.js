@@ -13,6 +13,10 @@ export default class WaypointsModel {
     return this.#waypoints;
   }
 
+  set waypoints (waypoints) {
+    this.#waypoints = waypoints;
+  }
+
   get offers () {
     return this.#offers;
   }

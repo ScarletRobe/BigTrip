@@ -55,14 +55,15 @@ export default class WaypointPresenter {
     return offers;
   }
 
-  #replaceWaypointToEditForm(waypointEditFormComponent) {
-    replace(waypointEditFormComponent, this.#waypointComponent);
+  #replaceWaypointToEditForm() {
+    replace(this.#waypointEditFormComponent, this.#waypointComponent);
   }
 
-  #replaceEditFormToWaypoint(waypointEditFormComponent) {
-    replace(this.#waypointComponent, waypointEditFormComponent);
-    waypointEditFormComponent.removeListeners();
-    waypointEditFormComponent.removeElement();
+  #replaceEditFormToWaypoint() {
+    replace(this.#waypointComponent, this.#waypointEditFormComponent);
+    this.#waypointEditFormComponent.removeListeners();
+    this.#waypointEditFormComponent.removeElement();
+    remove(this.#waypointEditFormComponent);
     this.#waypointEditFormComponent = null;
     document.removeEventListener('keydown', this.#documentKeydownHandler);
   }
@@ -75,7 +76,7 @@ export default class WaypointPresenter {
 
     document.addEventListener('keydown', this.#documentKeydownHandler);
 
-    this.#replaceWaypointToEditForm(this.#waypointEditFormComponent);
+    this.#replaceWaypointToEditForm();
   }
 
   /**
@@ -98,7 +99,7 @@ export default class WaypointPresenter {
 
   resetView() {
     if(this.#waypointEditFormComponent) {
-      this.#replaceEditFormToWaypoint(this.#waypointEditFormComponent);
+      this.#replaceEditFormToWaypoint();
     }
   }
 
@@ -114,13 +115,17 @@ export default class WaypointPresenter {
     this.#selectedDestination = this.#getSelectedDestination(waypoint);
     this.#selectedOffers = this.#getSelectedOffers(waypoint);
 
+
     if (prevWaypointComponent === null || prevWaypointEditFormComponent === null) {
       this.#renderWaypointItem(this.#waypoint, this.#selectedDestination, this.#selectedOffers);
       return;
     }
 
+    this.#waypointComponent = new WaypointItemView(waypoint, this.#selectedDestination, this.#selectedOffers);
+    this.#waypointComponent.setListener('clickOnRollupBtn', this.#waypointRollupBtnClickHandler);
+
     if (prevWaypointEditFormComponent) {
-      replace(this.#waypointEditFormComponent, prevWaypointEditFormComponent);
+      this.#replaceEditFormToWaypoint();
       remove(prevWaypointEditFormComponent);
       remove(prevWaypointComponent);
       return;
@@ -135,7 +140,7 @@ export default class WaypointPresenter {
   #documentKeydownHandler = (evt) => {
     if (isEscape(evt.code)) {
       evt.preventDefault();
-      this.#replaceEditFormToWaypoint(this.#waypointEditFormComponent);
+      this.#replaceEditFormToWaypoint();
     }
   };
 
@@ -145,12 +150,11 @@ export default class WaypointPresenter {
   };
 
   #waypointEditFormRollupBtnClickHandler = () => {
-    this.#replaceEditFormToWaypoint(this.#waypointEditFormComponent);
+    this.#replaceEditFormToWaypoint();
   };
 
   #waypointEditFormSubmitHandler = (evt) => {
     evt.preventDefault();
     this.#waypointUpdateHandler(this.#waypoint);
-    this.#replaceEditFormToWaypoint(this.#waypointEditFormComponent);
   };
 }
