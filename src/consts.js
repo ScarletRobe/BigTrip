@@ -21,8 +21,23 @@ const TRIP_EVENTS_AMOUNT = 10;
 
 //
 
-const SORT_OPTIONS = ['day', 'event', 'time', 'price', 'offers'];
-const AVAILABLE_SORT_OPTIONS = ['day', 'price'];
+const SORT_OPTIONS = {
+  day: {
+    sort: true,
+  },
+  event: {
+    sort: false,
+  },
+  time: {
+    sort: false,
+  },
+  price: {
+    sort: true,
+  },
+  offers: {
+    sort: false,
+  }
+};
 
 export {
   TYPES,
@@ -37,5 +52,4 @@ export {
   DATE,
   OFFERS_AMOUNT,
   SORT_OPTIONS,
-  AVAILABLE_SORT_OPTIONS,
 };
