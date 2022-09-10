@@ -57,10 +57,10 @@ const isEscape = (code) => (code === 'Escape' || code === 'Esc');
 
 /**
  * Меняет первую букву строки на заглавную.
- * @param {string} string - текст
+ * @param {string} text - текст
  * @returns {string} измененная строка
  */
-const capitalizeFirstLetter = (string) => string[0].toUpperCase() + string.slice(1);
+const capitalizeFirstLetter = (text) => text[0].toUpperCase() + text.slice(1);
 
 const changeArrayItem = (arr, updatedItem) => {
   const index = arr.findIndex((item) => item.id === updatedItem.id);
