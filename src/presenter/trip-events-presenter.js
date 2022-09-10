@@ -37,12 +37,10 @@ export default class TripEventsPresenter {
       return;
     }
 
-    const result = this.#waypointsModel.waypoints.slice();
-    result.sort((a, b) => a.dateFrom.diff(b.dateFrom));
+    this.#waypointsSortedByDay = this.#waypointsModel.waypoints.slice()
+      .sort((a, b) => a.dateFrom.diff(b.dateFrom));
     this.#clearWaypointsList();
-    this.#renderWaypoints(result);
-
-    this.#waypointsSortedByDay = result;
+    this.#renderWaypoints(this.#waypointsSortedByDay);
   }
 
   #sortByPrice() {
@@ -52,12 +50,10 @@ export default class TripEventsPresenter {
       return;
     }
 
-    const result = this.#waypointsModel.waypoints.slice();
-    result.sort((a, b) => b.basePrice - a.basePrice);
+    this.#waypointsSortedByPrice = this.#waypointsModel.waypoints.slice()
+      .sort((a, b) => b.basePrice - a.basePrice);
     this.#clearWaypointsList();
-    this.#renderWaypoints(result);
-
-    this.#waypointsSortedByPrice = result;
+    this.#renderWaypoints(this.#waypointsSortedByPrice);
   }
 
   #renderSort() {

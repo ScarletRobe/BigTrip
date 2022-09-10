@@ -48,11 +48,7 @@ export default class WaypointPresenter {
    */
   #getSelectedOffers(waypoint) {
     const offersList = this.#waypointsModel.offers.find((offer) => offer.type === waypoint.type);
-    const offers = [];
-    waypoint.offers.forEach((offerId) => {
-      offers.push(offersList.offers.find((offer) => offer.id === offerId));
-    });
-    return offers;
+    return offersList.offers.filter((offer) => waypoint.offers.some((offerId) => offerId === offer.id));
   }
 
   #replaceWaypointToEditForm() {
