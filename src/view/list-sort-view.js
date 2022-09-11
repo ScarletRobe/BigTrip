@@ -50,11 +50,11 @@ export default class ListSortView extends AbstractView {
    * @param {function} callback - функция, вызываемая при активации события
    */
   setListener (type, callback) {
-    this._handlers[type] = {
-      cb: this.#setSortClickHandler(callback),
-    };
     switch (type) {
       case 'click':
+        this._handlers[type] = {
+          cb: this.#setSortClickHandler(callback),
+        };
         this._handlers[type].element = '.trip-events__trip-sort';
         this._handlers[type].type = 'click';
         break;
@@ -63,6 +63,4 @@ export default class ListSortView extends AbstractView {
     }
     this.element.querySelector(this._handlers[type].element).addEventListener(this._handlers[type].type, this._handlers[type].cb);
   }
-
-
 }

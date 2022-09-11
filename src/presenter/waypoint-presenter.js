@@ -149,8 +149,7 @@ export default class WaypointPresenter {
     this.#replaceEditFormToWaypoint();
   };
 
-  #waypointEditFormSubmitHandler = (evt) => {
-    evt.preventDefault();
-    this.#waypointUpdateHandler(this.#waypoint);
+  #waypointEditFormSubmitHandler = (updatedWaypoint) => {
+    this.#waypointUpdateHandler(updatedWaypoint);
   };
 }

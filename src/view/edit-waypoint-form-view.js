@@ -1,5 +1,6 @@
-import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeDate } from '../utils.js';
+import { TYPES, CITIES } from '../consts.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { getDestinationListOptions } from './templates/destination-list-options.js';
 import { getEventTypeItems } from './templates/event-type-items.js';
 import { getEventAvailableOffers } from './templates/event-available-offers.js';
@@ -86,7 +87,7 @@ const getEditWaypointFormTemplate = (waypoint, selectedDestination, selectedOffe
   </li>`
 );
 
-export default class EditWaypointFormView extends AbstractView {
+export default class EditWaypointFormView extends AbstractStatefulView {
   /**
    * @param {object} waypoint - объект с информацией о месте назначения.
    * @param {object} selectedDestination - объект с информацией о выбранном месте назначения.
@@ -96,15 +97,59 @@ export default class EditWaypointFormView extends AbstractView {
    */
   constructor(waypoint, selectedDestination, selectedOffers, destinations, offers) {
     super();
-    this.waypoint = waypoint;
     this.selectedDestination = selectedDestination;
     this.selectedOffers = selectedOffers;
     this.destinations = destinations;
     this.offers = offers;
+    this._state = waypoint;
+
+
+    this.element.querySelector('.event__available-offers').addEventListener('click', this.#availableEventOffersClickHandler);
+    this.element.querySelector('.event__type-group').addEventListener('click', this.#eventTypeSelectorClickHandler);
+    this.element.querySelector('.event__input--price').addEventListener('input', this.#eventPriceInputHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('input', this.#eventDestinationInputHandler);
   }
 
   get template () {
-    return getEditWaypointFormTemplate(this.waypoint, this.selectedDestination, this.selectedOffers, this.destinations, this.offers);
+    return getEditWaypointFormTemplate(this._state, this.selectedDestination, this.selectedOffers, this.destinations, this.offers);
+  }
+
+  static parseWaypointToState(waypoint) {
+    return waypoint;
+  }
+
+  static parseStateToWaypoint(state) {
+    const waypoint = state;
+
+    if (waypoint.updatedOffers) {
+      waypoint.offers = [...waypoint.updatedOffers];
+
+      delete waypoint.updatedOffers;
+    }
+
+    if (waypoint.updatedType) {
+      for (const type in TYPES) {
+        if (TYPES[type].id === waypoint.updatedType) {
+          waypoint.type = type;
+        }
+      }
+
+      delete waypoint.updatedType;
+    }
+
+    if (waypoint.updatedBasePrice) {
+      waypoint.basePrice = waypoint.updatedBasePrice;
+
+      delete waypoint.updatedBasePrice;
+    }
+
+    if (waypoint.updatedDestination && waypoint.updatedDestination !== -1) {
+      waypoint.destination = waypoint.updatedDestination;
+
+      delete waypoint.updatedDestination;
+    }
+
+    return waypoint;
   }
 
   /**
@@ -113,15 +158,18 @@ export default class EditWaypointFormView extends AbstractView {
    * @param {function} callback - функция, вызываемая при активации события
    */
   setListener (type, callback) {
-    this._handlers[type] = {
-      cb: callback,
-    };
     switch (type) {
       case 'submit':
+        this._handlers[type] = {
+          cb: this.#setFormSubmitHandler(callback),
+        };
         this._handlers[type].element = '.event--edit';
         this._handlers[type].type = 'submit';
         break;
       case 'clickOnRollupBtn':
+        this._handlers[type] = {
+          cb: callback,
+        };
         this._handlers[type].element = '.event__rollup-btn';
         this._handlers[type].type = 'click';
         break;
@@ -130,4 +178,46 @@ export default class EditWaypointFormView extends AbstractView {
     }
     this.element.querySelector(this._handlers[type].element).addEventListener(this._handlers[type].type, this._handlers[type].cb);
   }
+
+  #setFormSubmitHandler(callback) {
+    return (evt) => {
+      evt.preventDefault();
+      callback(EditWaypointFormView.parseStateToWaypoint(this._state));
+    };
+  }
+
+  #availableEventOffersClickHandler = (evt) => {
+    const element = evt.target.closest('.event__offer-label');
+    if (element) {
+      const htmlFor = element.htmlFor;
+      const id = Number(htmlFor[htmlFor.length - 1]);
+      this._state.updatedOffers = this._state.updatedOffers ?? new Set(this._state.offers);
+      if (!element.control.checked) {
+        this._state.updatedOffers.add(id);
+      } else {
+        this._state.updatedOffers.delete(id);
+      }
+    }
+  };
+
+  // TODO: перерисовка при клике на тип
+  #eventTypeSelectorClickHandler = (evt) => {
+    const element = evt.target;
+    if (element.matches('.event__type-label') && !element.control.checked) {
+      const htmlFor = evt.target.htmlFor;
+      this._state.updatedType = Number(htmlFor[htmlFor.length - 1]);
+    }
+  };
+
+  // TODO: Нужно ли отдельное св-во
+  #eventPriceInputHandler = (evt) => {
+    this._state.updatedBasePrice = evt.target.value;
+  };
+
+  // TODO: перерисовка при смене/структура cities
+  #eventDestinationInputHandler = (evt) => {
+    if (evt.target.value) {
+      this._state.updatedDestination = CITIES.findIndex((city) => city === evt.target.value) + 1;
+    }
+  };
 }
