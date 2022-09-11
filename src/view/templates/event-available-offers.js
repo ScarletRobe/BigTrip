@@ -13,8 +13,8 @@ export const getEventAvailableOffers = (selectedType, selectedOffers, offers) =>
     const offerTitlteWithoutSpaces = offer.title.replaceAll(' ', '-');
     return (
       `<div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerTitlteWithoutSpaces}-1" type="checkbox" name="event-offer-${offerTitlteWithoutSpaces}" ${checked}>
-          <label class="event__offer-label" for="event-offer-${offerTitlteWithoutSpaces}-1">
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerTitlteWithoutSpaces}-${offer.id}" type="checkbox" name="event-offer-${offerTitlteWithoutSpaces}" ${checked}>
+          <label class="event__offer-label" for="event-offer-${offerTitlteWithoutSpaces}-${offer.id}">
             <span class="event__offer-title">${offer.title}</span>
             &plus;&euro;&nbsp;
             <span class="event__offer-price">${offer.price}</span>

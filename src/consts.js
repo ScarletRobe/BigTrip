@@ -1,6 +1,34 @@
 // Mock
 
-const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
+const TYPES = {
+  taxi: {
+    id: 1,
+  },
+  bus: {
+    id: 2,
+  },
+  train: {
+    id: 3,
+  },
+  ship: {
+    id: 4,
+  },
+  drive: {
+    id: 5,
+  },
+  flight: {
+    id: 6,
+  },
+  'check-in': {
+    id: 7,
+  },
+  sightseeing: {
+    id: 8,
+  },
+  restaurant: {
+    id: 9,
+  },
+};
 
 // Waypoint
 const BASE_PRICE_RANGE = [300, 1500];
