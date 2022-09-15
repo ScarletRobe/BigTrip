@@ -22,7 +22,7 @@ export default class TripEventsPresenter {
 
   /**
    * @param {object} container - DOM элемент, в который будут помещены все элементы, созданные в ходе работы.
-   * @param {object} waypointsModel - Модель, содержащая всю информацию о местах назначения.
+   * @param {object} waypointsModel - Модель, содержащая всю информацию о точках маршрута.
    */
   constructor(container, waypointsModel) {
     this.#container = container;
@@ -71,7 +71,7 @@ export default class TripEventsPresenter {
 
   /**
    * Создает презентер под отдельную точку маршрута.
-   * @param {object} waypoint - объект с информацией о месте назначения.
+   * @param {object} waypoint - объект с информацией о точке маршрута.
    */
   #renderWaypoints(waypoints) {
     for (let i = 0; i < TRIP_EVENTS_AMOUNT; i++) {

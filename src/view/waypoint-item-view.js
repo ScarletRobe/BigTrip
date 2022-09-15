@@ -15,8 +15,8 @@ const getEventOffers = (offers) => offers.map((offer) => (
 )).join('\n');
 
 /**
- * Генерирует полную информацию о месте назначения.
- * @param {object} waypoint - объект с информацией о месте назначения.
+ * Генерирует разметку карточки с информацией о точке маршрута.
+ * @param {object} waypoint - объект с информацией о точке маршрута.
  * @param {object} selectedDestination - объект с информацией о выбранном месте назначения.
  * @param {array} offers - массив всех типов событий и дополнительных предложений.
  * @returns {string} строка с HTML кодом.
@@ -52,7 +52,7 @@ const getWaypointItemTemplate = (waypoint, selectedDestination, offers) => (
 
 export default class WaypointItemView extends AbstractView {
   /**
-   * @param {object} waypoint - объект с информацией о месте назначения.
+   * @param {object} waypoint - объект с информацией о точке маршрута.
    * @param {object} selectedDestination - объект с информацией о выбранном месте назначения.
    * @param {array} offers - массив всех типов событий и дополнительных предложений.
    */
