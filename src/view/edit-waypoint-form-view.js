@@ -1,6 +1,12 @@
-import { humanizeDate, getSelectedDestination, getSelectedOffers } from '../utils.js';
-import { TYPES, CITIES } from '../consts.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
+import { humanizeDate, getSelectedDestination, getSelectedOffers, formatDate } from '../utils.js';
+import { TYPES, CITIES } from '../consts.js';
+
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
+import 'flatpickr/dist/themes/material_blue.css';
+import { Russian } from 'flatpickr/dist/l10n/ru.js';
+
 import { getDestinationListOptions } from './templates/destination-list-options.js';
 import { getEventTypeItems } from './templates/event-type-items.js';
 import { getEventAvailableOffers } from './templates/event-available-offers.js';
@@ -13,80 +19,86 @@ import { getEventAvailableOffers } from './templates/event-available-offers.js';
  * @param {array} offers - массив всех типов событий и дополнительных предложений.
  * @returns {string} строка с HTML кодом.
  */
-const getEditWaypointFormTemplate = (state, selectedDestination, destinations, offers) => (
-  `<li class="trip-events__item">
-    <form class="event event--edit" action="#" method="post">
-      <header class="event__header">
-        <div class="event__type-wrapper">
-          <label class="event__type  event__type-btn" for="event-type-toggle-${state.id}">
-            <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${state.updatedType}.png" alt="Event type icon">
-          </label>
-          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${state.id}" type="checkbox">
+const getEditWaypointFormTemplate = (state, selectedDestination, destinations, offers) => {
+  const destination = getSelectedDestination(destinations, state);
+  return (
+    `<li class="trip-events__item">
+      <form class="event event--edit" action="#" method="post">
+        <header class="event__header">
+          <div class="event__type-wrapper">
+            <label class="event__type  event__type-btn" for="event-type-toggle-${state.id}">
+              <span class="visually-hidden">Choose event type</span>
+              <img class="event__type-icon" width="17" height="17" src="img/icons/${state.updatedType}.png" alt="Event type icon">
+            </label>
+            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${state.id}" type="checkbox">
 
-            <div class="event__type-list">
-            <fieldset class="event__type-group">
-              <legend class="visually-hidden">Event type</legend>
+              <div class="event__type-list">
+              <fieldset class="event__type-group">
+                <legend class="visually-hidden">Event type</legend>
 
-              ${getEventTypeItems(state.updatedType, offers)}
+                ${getEventTypeItems(state.updatedType, offers)}
 
-            </fieldset>
+              </fieldset>
+            </div>
           </div>
-        </div>
 
-        <div class="event__field-group  event__field-group--destination">
-          <label class="event__label  event__type-output" for="event-destination-1">
-            ${state.updatedType}
-          </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${state.updatedDestination?.value ?? selectedDestination.name}" list="destination-list-1">
-          <datalist id="destination-list-1">
-            ${getDestinationListOptions(destinations)}
-          </datalist>
-        </div>
-
-        <div class="event__field-group  event__field-group--time">
-          <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${humanizeDate(state.dateFrom, 'D/MM/YY HH:mm')}">
-          &mdash;
-          <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${humanizeDate(state.dateTo, 'D/MM/YY HH:mm')}">
-        </div>
-
-        <div class="event__field-group  event__field-group--price">
-          <label class="event__label" for="event-price-1">
-            <span class="visually-hidden">Price</span>
-            &euro;
-          </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${state.updatedBasePrice}">
-        </div>
-
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Delete</button>
-        <button class="event__rollup-btn" type="button">
-          <span class="visually-hidden">Open event</span>
-        </button>
-      </header>
-      <section class="event__details">
-         <section class="event__section  event__section--offers">
-          <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
-          <div class="event__available-offers">
-
-            ${getEventAvailableOffers(state.updatedType, getSelectedOffers(offers, state), offers)}
-
+          <div class="event__field-group  event__field-group--destination">
+            <label class="event__label  event__type-output" for="event-destination-1">
+              ${state.updatedType}
+            </label>
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
+            <datalist id="destination-list-1">
+              ${getDestinationListOptions(destinations)}
+            </datalist>
           </div>
-        </section>
 
-        <section class="event__section  event__section--destination">
-          <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${getSelectedDestination(destinations, state)?.description ?? selectedDestination.description}</p>
+          <div class="event__field-group  event__field-group--time">
+            <label class="visually-hidden" for="event-start-time-1">From</label>
+            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${humanizeDate(state.updatedDateFrom, 'D/MM/YY HH:mm')}">
+            &mdash;
+            <label class="visually-hidden" for="event-end-time-1">To</label>
+            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${humanizeDate(state.updatedDateTo, 'D/MM/YY HH:mm')}">
+          </div>
+
+          <div class="event__field-group  event__field-group--price">
+            <label class="event__label" for="event-price-1">
+              <span class="visually-hidden">Price</span>
+              &euro;
+            </label>
+            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${state.updatedBasePrice}">
+          </div>
+
+          <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+          <button class="event__reset-btn" type="reset">Delete</button>
+          <button class="event__rollup-btn" type="button">
+            <span class="visually-hidden">Open event</span>
+          </button>
+        </header>
+        <section class="event__details">
+          <section class="event__section  event__section--offers">
+            <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+
+            <div class="event__available-offers">
+
+              ${getEventAvailableOffers(state.updatedType, getSelectedOffers(offers, state), offers)}
+
+            </div>
+          </section>
+
+          <section class="event__section  event__section--destination">
+            <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+            <p class="event__destination-description">${destination.description}</p>
+          </section>
         </section>
-      </section>
-    </form>
-  </li>`
-);
+      </form>
+    </li>`
+  );
+};
 
 export default class EditWaypointFormView extends AbstractStatefulView {
+  #dateFromPicker = null;
+  #dateToPicker = null;
+
   /**
    * @param {object} waypoint - объект с информацией о точке маршрута.
    * @param {object} selectedDestination - объект с информацией о выбранной месте назначения.
@@ -116,11 +128,14 @@ export default class EditWaypointFormView extends AbstractStatefulView {
     const state = waypoint;
     state.updatedType = state.type;
     state.updatedBasePrice = state.basePrice;
-    state.updatedDestination = {
-      value: null,
-      id: state.destination,
-    };
+    state.updatedDestination = waypoint.destination;
+    // state.updatedDestination = {
+    //   value: null,
+    //   id: state.destination,
+    // };
     state.updatedOffers = new Set(waypoint.offers);
+    state.updatedDateFrom = waypoint.dateFrom;
+    state.updatedDateTo = waypoint.dateTo;
 
     return state;
   }
@@ -136,15 +151,19 @@ export default class EditWaypointFormView extends AbstractStatefulView {
     waypoint.offers = [...waypoint.updatedOffers];
     waypoint.type = waypoint.updatedType;
     waypoint.basePrice = waypoint.updatedBasePrice;
+    waypoint.dateFrom = waypoint.updatedDateFrom;
+    waypoint.dateTo = waypoint.updatedDateTo;
 
-    if (waypoint.updatedDestination && waypoint.updatedDestination !== -1) {
-      waypoint.destination = waypoint.updatedDestination.id;
+    if (waypoint.updatedDestination !== -1) {
+      waypoint.destination = waypoint.updatedDestination;
     }
 
     delete waypoint.updatedType;
     delete waypoint.updatedBasePrice;
     delete waypoint.updatedDestination;
     delete waypoint.updatedOffers;
+    delete waypoint.updatedDateFrom;
+    delete waypoint.updatedDateTo;
 
     return waypoint;
   }
@@ -185,6 +204,7 @@ export default class EditWaypointFormView extends AbstractStatefulView {
   }
 
   #setInnerHandlers() {
+    this.#setDatepickers();
     this.element.querySelector('.event__available-offers').addEventListener('click', this.#availableEventOffersClickHandler);
     this.element.querySelector('.event__type-group').addEventListener('click', this.#eventTypeSelectorClickHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#eventPriceInputHandler);
@@ -197,6 +217,44 @@ export default class EditWaypointFormView extends AbstractStatefulView {
       this.setListener(handler, this._handlers[handler].outerCallback ?? this._handlers[handler].cb);
     }
   };
+
+  removeElement() {
+    super.removeElement();
+
+    if (this.#dateFromPicker && this.#dateToPicker) {
+      this.#dateFromPicker.destroy();
+      this.#dateToPicker.destroy();
+      this.#dateFromPicker = null;
+      this.#dateToPicker = null;
+    }
+  }
+
+  #setDatepickers() {
+    const DATEPICKER_CONFIG = {
+      dateFormat: 'd/m/y H:i',
+      allowInput: true,
+      enableTime: true,
+      'time_24hr': true,
+      locale: Russian,
+    };
+
+    this.#dateFromPicker = flatpickr(
+      this.element.querySelector('#event-start-time-1'),
+      {
+        ...DATEPICKER_CONFIG,
+        defaultDate: humanizeDate(this._state.dateFrom, 'D/MM/YY HH:mm'),
+        onChange: (date) => this.#eventDateChangeHandler(date, 'dateFrom'),
+      }
+    );
+    this.#dateToPicker = flatpickr(
+      this.element.querySelector('#event-end-time-1'),
+      {
+        ...DATEPICKER_CONFIG,
+        defaultDate: humanizeDate(this._state.dateTo, 'D/MM/YY HH:mm'),
+        onChange: (date) => this.#eventDateChangeHandler(date, 'dateTo'),
+      }
+    );
+  }
 
   // Обработчики
 
@@ -232,11 +290,20 @@ export default class EditWaypointFormView extends AbstractStatefulView {
     evt.preventDefault();
     if (CITIES.includes(evt.target.value)) {
       this.updateElement({
-        updatedDestination: {
-          value: evt.target.value,
-          id: CITIES.findIndex((city) => city === evt.target.value) + 1,
-        }
+        updatedDestination: CITIES.findIndex((city) => city === evt.target.value) + 1,
       });
+    }
+  };
+
+  #eventDateChangeHandler = ([date], field) => {
+    switch(field) {
+      case 'dateFrom':
+        this._state.updatedDateFrom = formatDate(date);
+        break;
+      case 'dateTo':
+        this._state.updatedDateTo = formatDate(date);
+        break;
+      default: throw new Error('Incorrect field');
     }
   };
 }

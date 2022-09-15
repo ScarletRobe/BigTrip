@@ -41,12 +41,18 @@ const getUniqueRandomPositiveInteger = (min, max) => {
 
 /**
  * Переводит дату из формата UTC в удобный для пользователя.
- * @param {string} date - дата в формате UTC.
+ * @param {Date} date - дата в формате UTC.
  * @param {string} format - формат, в котором нужно отобразить дату.
  * @returns {string} - дата в понятном формате.
  */
 const humanizeDate = (date, format = 'D MMMM') => dayjs(date).format(format);
 
+/**
+ * Приводит формат даты к формтау dayjs.
+ * @param {Date} date - дата в формате UTC.
+ * @returns {object} - дата в формате dayjs
+ */
+const formatDate = (date) => dayjs(date);
 
 /**
  *
@@ -82,7 +88,7 @@ const changeArrayItem = (arr, updatedItem) => {
  * @param {object} waypoint - объект с информацией о точке маршрута.
  * @returns {object} объект с информацией о выбранном месте назначения.
  */
-const getSelectedDestination = (destinations, waypoint) => destinations.find((dest) => dest.id === (waypoint.updatedDestination?.id ?? waypoint.destination));
+const getSelectedDestination = (destinations, waypoint) => destinations.find((dest) => dest.id === (waypoint.updatedDestination ?? waypoint.destination));
 
 /**
  * Ищет информацию о выбранных дополнительных предложениях.
@@ -105,4 +111,5 @@ export {
   changeArrayItem,
   getSelectedDestination,
   getSelectedOffers,
+  formatDate,
 };
