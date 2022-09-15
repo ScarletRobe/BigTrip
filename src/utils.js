@@ -76,6 +76,26 @@ const changeArrayItem = (arr, updatedItem) => {
   ];
 };
 
+/**
+ * Ищет выбранное место назначения.
+ * @param {array} destinations - массив мест назначений.
+ * @param {object} waypoint - объект с информацией о точке маршрута.
+ * @returns {object} объект с информацией о выбранном месте назначения.
+ */
+const getSelectedDestination = (destinations, waypoint) => destinations.find((dest) => dest.id === (waypoint.updatedDestination?.id ?? waypoint.destination));
+
+/**
+ * Ищет информацию о выбранных дополнительных предложениях.
+ * @param {array} offers - массив всех типов событий и дополнительных предложений.
+ * @param {object} waypoint - объект с информацией о точке маршрута.
+ * @returns {array} массив объектов.
+ */
+const getSelectedOffers = (offers, waypoint) => {
+  const offersList = offers.find((offer) => offer.type === (waypoint.updatedType ?? waypoint.type));
+  const selectedOffersIds = waypoint.updatedOffers ?? waypoint.offers;
+  return offersList.offers.filter((offer) => [...selectedOffersIds].some((offerId) => offerId === offer.id));
+};
+
 export {
   getRandomPositiveInteger,
   getUniqueRandomPositiveInteger,
@@ -83,4 +103,6 @@ export {
   isEscape,
   capitalizeFirstLetter,
   changeArrayItem,
+  getSelectedDestination,
+  getSelectedOffers,
 };
