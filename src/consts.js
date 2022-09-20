@@ -1,6 +1,34 @@
 // Mock
 
-const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
+const TYPES = {
+  taxi: {
+    id: 1,
+  },
+  bus: {
+    id: 2,
+  },
+  train: {
+    id: 3,
+  },
+  ship: {
+    id: 4,
+  },
+  drive: {
+    id: 5,
+  },
+  flight: {
+    id: 6,
+  },
+  'check-in': {
+    id: 7,
+  },
+  sightseeing: {
+    id: 8,
+  },
+  restaurant: {
+    id: 9,
+  },
+};
 
 // Waypoint
 const BASE_PRICE_RANGE = [300, 1500];
@@ -21,8 +49,23 @@ const TRIP_EVENTS_AMOUNT = 10;
 
 //
 
-const SORT_OPTIONS = ['day', 'event', 'time', 'price', 'offers'];
-const AVAILABLE_SORT_OPTIONS = ['day', 'price'];
+const SORT_OPTIONS = {
+  day: {
+    sort: true,
+  },
+  event: {
+    sort: false,
+  },
+  time: {
+    sort: false,
+  },
+  price: {
+    sort: true,
+  },
+  offers: {
+    sort: false,
+  }
+};
 
 export {
   TYPES,
@@ -37,5 +80,4 @@ export {
   DATE,
   OFFERS_AMOUNT,
   SORT_OPTIONS,
-  AVAILABLE_SORT_OPTIONS,
 };

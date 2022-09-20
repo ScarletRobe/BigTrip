@@ -27,8 +27,8 @@ const getOffers = () => {
  * Генерирует все варианты событий и дополнительных предложений к ним.
  * @returns {array} массив типов событий и опций.
  */
-export const generateOffersByType = () => Array.from({length: TYPES.length}, (_value, index) => ({
-  type: TYPES[index],
+export const generateOffersByType = () => Array.from({length: Object.keys(TYPES).length}, (_value, index) => ({
+  type: Object.keys(TYPES)[index],
   offers: getOffers(),
 }));
 

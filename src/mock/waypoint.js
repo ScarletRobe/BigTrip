@@ -39,7 +39,7 @@ export const generateWaypoint = () => {
   const date = generateDate();
   return {
     id: nanoid(),
-    type: TYPES[getRandomPositiveInteger(0,TYPES.length - 1)],
+    type: Object.keys(TYPES)[getRandomPositiveInteger(0, Object.keys(TYPES).length - 1)],
     dateFrom: date.dateFrom,
     dateTo: date.dateTo,
     destination: getRandomPositiveInteger(1, CITIES.length),

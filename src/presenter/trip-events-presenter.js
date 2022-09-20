@@ -22,7 +22,7 @@ export default class TripEventsPresenter {
 
   /**
    * @param {object} container - DOM элемент, в который будут помещены все элементы, созданные в ходе работы.
-   * @param {object} waypointsModel - Модель, содержащая всю информацию о местах назначения.
+   * @param {object} waypointsModel - Модель, содержащая всю информацию о точках маршрута.
    */
   constructor(container, waypointsModel) {
     this.#container = container;
@@ -37,12 +37,10 @@ export default class TripEventsPresenter {
       return;
     }
 
-    const result = this.#waypointsModel.waypoints.slice();
-    result.sort((a, b) => a.dateFrom.diff(b.dateFrom));
+    this.#waypointsSortedByDay = this.#waypointsModel.waypoints.slice()
+      .sort((a, b) => a.dateFrom.diff(b.dateFrom));
     this.#clearWaypointsList();
-    this.#renderWaypoints(result);
-
-    this.#waypointsSortedByDay = result;
+    this.#renderWaypoints(this.#waypointsSortedByDay);
   }
 
   #sortByPrice() {
@@ -52,12 +50,10 @@ export default class TripEventsPresenter {
       return;
     }
 
-    const result = this.#waypointsModel.waypoints.slice();
-    result.sort((a, b) => b.basePrice - a.basePrice);
+    this.#waypointsSortedByPrice = this.#waypointsModel.waypoints.slice()
+      .sort((a, b) => b.basePrice - a.basePrice);
     this.#clearWaypointsList();
-    this.#renderWaypoints(result);
-
-    this.#waypointsSortedByPrice = result;
+    this.#renderWaypoints(this.#waypointsSortedByPrice);
   }
 
   #renderSort() {
@@ -75,7 +71,7 @@ export default class TripEventsPresenter {
 
   /**
    * Создает презентер под отдельную точку маршрута.
-   * @param {object} waypoint - объект с информацией о месте назначения.
+   * @param {object} waypoint - объект с информацией о точке маршрута.
    */
   #renderWaypoints(waypoints) {
     for (let i = 0; i < TRIP_EVENTS_AMOUNT; i++) {

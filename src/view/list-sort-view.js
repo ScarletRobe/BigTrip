@@ -1,9 +1,9 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { SORT_OPTIONS, AVAILABLE_SORT_OPTIONS } from '../consts.js';
+import { SORT_OPTIONS } from '../consts.js';
 import { capitalizeFirstLetter } from '../utils.js';
 
-const generateTripSortItems = (waypointsAmount) => SORT_OPTIONS.map((option) => {
-  const disabled = waypointsAmount && AVAILABLE_SORT_OPTIONS.includes(option) ? '' : 'disabled';
+const generateTripSortItems = (waypointsAmount) => Object.keys(SORT_OPTIONS).map((option) => {
+  const disabled = waypointsAmount && SORT_OPTIONS[option].sort ? '' : 'disabled';
   return `<div class="trip-sort__item  trip-sort__item--${option}">
   <input id="sort-${option}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${option}" ${disabled}>
   <label class="trip-sort__btn" for="sort-${option}" data-sort-type="${option}">${capitalizeFirstLetter(option)}</label>
@@ -36,7 +36,7 @@ export default class ListSortView extends AbstractView {
 
   #setSortClickHandler(callback) {
     return (evt) => {
-      if (evt.target.tagName === 'LABEL' && AVAILABLE_SORT_OPTIONS.includes(evt.target.dataset.sortType) && !evt.target.control.checked) {
+      if (evt.target.tagName === 'LABEL' && SORT_OPTIONS[evt.target.dataset.sortType].sort && !evt.target.control.checked) {
         evt.preventDefault();
         callback(evt.target.dataset.sortType);
         evt.target.control.checked = true;
@@ -50,11 +50,11 @@ export default class ListSortView extends AbstractView {
    * @param {function} callback - функция, вызываемая при активации события
    */
   setListener (type, callback) {
-    this._handlers[type] = {
-      cb: this.#setSortClickHandler(callback),
-    };
     switch (type) {
       case 'click':
+        this._handlers[type] = {
+          cb: this.#setSortClickHandler(callback),
+        };
         this._handlers[type].element = '.trip-events__trip-sort';
         this._handlers[type].type = 'click';
         break;
@@ -63,6 +63,4 @@ export default class ListSortView extends AbstractView {
     }
     this.element.querySelector(this._handlers[type].element).addEventListener(this._handlers[type].type, this._handlers[type].cb);
   }
-
-
 }
