@@ -19,7 +19,7 @@ import { getEventAvailableOffers } from './templates/event-available-offers.js';
  * @param {array} offers - массив всех типов событий и дополнительных предложений.
  * @returns {string} строка с HTML кодом.
  */
-const getEditWaypointFormTemplate = (state, selectedDestination, destinations, offers) => {
+const getEditWaypointFormTemplate = (state, destinations, offers) => {
   const destination = getSelectedDestination(destinations, state);
   return (
     `<li class="trip-events__item">
@@ -116,7 +116,7 @@ export default class EditWaypointFormView extends AbstractStatefulView {
   }
 
   get template () {
-    return getEditWaypointFormTemplate(this._state, this.selectedDestination, this.destinations, this.offers);
+    return getEditWaypointFormTemplate(this._state, this.destinations, this.offers);
   }
 
   /**
@@ -129,10 +129,6 @@ export default class EditWaypointFormView extends AbstractStatefulView {
     state.updatedType = state.type;
     state.updatedBasePrice = state.basePrice;
     state.updatedDestination = waypoint.destination;
-    // state.updatedDestination = {
-    //   value: null,
-    //   id: state.destination,
-    // };
     state.updatedOffers = new Set(waypoint.offers);
     state.updatedDateFrom = waypoint.dateFrom;
     state.updatedDateTo = waypoint.dateTo;
