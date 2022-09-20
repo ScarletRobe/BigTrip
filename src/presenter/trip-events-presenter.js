@@ -1,16 +1,18 @@
 import ListSortView from '../view/list-sort-view.js';
 import WaypointsListView from '../view/waypoints-list-view.js';
 import EmptyListView from '../view/empty-list-view.js';
+import NewWaypointFormView from '../view/new-waypoint-form-view.js';
 
 import WaypointPresenter from './waypoint-presenter.js';
 
-import { render } from '../framework/render.js';
+import { RenderPosition, render } from '../framework/render.js';
 import { TRIP_EVENTS_AMOUNT } from '../consts.js';
 import { changeArrayItem } from '../utils.js';
 
 export default class TripEventsPresenter {
   #listSortComponent = null;
   #waypointsListComponent = new WaypointsListView();
+  #newWaypointFormComponent = null;
 
   #container = null;
   #waypointsModel = null;
@@ -69,6 +71,12 @@ export default class TripEventsPresenter {
     render(new EmptyListView(), this.#container);
   }
 
+  #renderNewWaypointForm() {
+    this.#newWaypointFormComponent = new NewWaypointFormView(this.#waypointsModel.offers, this.#waypointsModel.destinations);
+    render(this.#newWaypointFormComponent, this.#waypointsListComponent.element, RenderPosition.AFTERBEGIN);
+    // this.#newWaypointFormComponent.setListener('cancel', () => {})
+  }
+
   /**
    * Создает презентер под отдельную точку маршрута.
    * @param {object} waypoint - объект с информацией о точке маршрута.
@@ -116,6 +124,13 @@ export default class TripEventsPresenter {
       this.#renderEmptyList();
     }
     this.#renderWaypoints(this.#waypointsModel.waypoints);
+  }
+
+  createNewWaypointFormComponentView() {
+    if (this.#newWaypointFormComponent) {
+      return;
+    }
+    this.#renderNewWaypointForm();
   }
 
   // Обработчики
