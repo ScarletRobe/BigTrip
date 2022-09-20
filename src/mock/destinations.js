@@ -15,7 +15,7 @@ import {
  * @returns {array} массив фотографий и описаний.
  */
 const generatePictures = (city) => Array.from({length: getRandomPositiveInteger(...PICTURES_RANGE)}, () => ({
-  src: 'http://picsum.photos/300/200?r=1',
+  src: `http://picsum.photos/300/200?r=${getRandomPositiveInteger(0, 50)}`,
   description: `${city} ${PICTURES_DESCRIPTIONS[getRandomPositiveInteger(0, PICTURES_DESCRIPTIONS.length - 1)]}`,
 }));
 
