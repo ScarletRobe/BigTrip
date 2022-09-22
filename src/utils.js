@@ -68,20 +68,6 @@ const isEscape = (code) => (code === 'Escape' || code === 'Esc');
  */
 const capitalizeFirstLetter = (text) => text[0].toUpperCase() + text.slice(1);
 
-const changeArrayItem = (arr, updatedItem) => {
-  const index = arr.findIndex((item) => item.id === updatedItem.id);
-
-  if (index === -1) {
-    return arr;
-  }
-
-  return [
-    ...arr.slice(0, index),
-    updatedItem,
-    ...arr.slice(index + 1)
-  ];
-};
-
 /**
  * Ищет выбранное место назначения.
  * @param {array} destinations - массив мест назначений.
@@ -108,7 +94,6 @@ export {
   humanizeDate,
   isEscape,
   capitalizeFirstLetter,
-  changeArrayItem,
   getSelectedDestination,
   getSelectedOffers,
   formatDate,

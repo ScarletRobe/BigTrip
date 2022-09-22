@@ -1,11 +1,13 @@
+import Observable from '../framework/observable.js';
+
 import { TRIP_EVENTS_AMOUNT } from '../consts.js';
 
 import { generateWaypoint } from '../mock/waypoint.js';
 import { generateOffersByType } from '../mock/offers.js';
 import { generateDestinations } from '../mock/destinations.js';
 
-export default class WaypointsModel {
-  #waypoints = Array.from({length: TRIP_EVENTS_AMOUNT}, (_value, index) => generateWaypoint(index));
+export default class WaypointsModel extends Observable {
+  #waypoints = Array.from({length: TRIP_EVENTS_AMOUNT}, () => generateWaypoint());
   #offers = generateOffersByType();
   #destinations = generateDestinations();
 
@@ -13,9 +15,45 @@ export default class WaypointsModel {
     return this.#waypoints;
   }
 
-  set waypoints (waypoints) {
-    this.#waypoints = waypoints;
+  updateWaypoint(updateType, update) {
+    const index = this.#waypoints.findIndex((item) => item.id === update.id);
+
+    if (index === -1) {
+      throw new Error('Can\'t update unexisting waypoint');
+    }
+
+    this.#waypoints = [
+      ...this.#waypoints.slice(0, index),
+      update,
+      ...this.#waypoints.slice(index + 1)
+    ];
+
+    this._notify(updateType, update);
   }
+
+  addWaypoint = (updateType, update) => {
+    this.#waypoints = [
+      update,
+      ...this.#waypoints,
+    ];
+
+    this._notify(updateType, update);
+  };
+
+  deleteWaypoint = (updateType, update) => {
+    const index = this.#waypoints.findIndex((task) => task.id === update.id);
+
+    if (index === -1) {
+      throw new Error('Can\'t delete unexisting waypoint');
+    }
+
+    this.#waypoints = [
+      ...this.#waypoints.slice(0, index),
+      ...this.#waypoints.slice(index + 1),
+    ];
+
+    this._notify(updateType);
+  };
 
   get offers () {
     return this.#offers;

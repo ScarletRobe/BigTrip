@@ -52,19 +52,36 @@ const TRIP_EVENTS_AMOUNT = 10;
 const SORT_OPTIONS = {
   day: {
     sort: true,
+    name: 'day',
   },
   event: {
     sort: false,
+    name: 'event',
   },
   time: {
     sort: false,
+    name: 'time',
   },
   price: {
     sort: true,
+    name: 'price',
   },
   offers: {
     sort: false,
+    name: 'offers',
   }
+};
+
+const UserAction = {
+  UPDATE_WAYPOINT: 'UPDATE_WAYPOINT',
+  ADD_WAYPOINT: 'ADD_WAYPOINT',
+  DELETE_WAYPOINT: 'DELETE_WAYPOINT',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
 };
 
 export {
@@ -80,4 +97,6 @@ export {
   DATE,
   OFFERS_AMOUNT,
   SORT_OPTIONS,
+  UserAction,
+  UpdateType
 };

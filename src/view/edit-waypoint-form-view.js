@@ -125,7 +125,7 @@ export default class EditWaypointFormView extends AbstractStatefulView {
    * @returns {object} state - объект с информацией о состоянии точки маршрута.
    */
   static parseWaypointToState(waypoint) {
-    const state = waypoint;
+    const state = {...waypoint};
     state.updatedType = state.type;
     state.updatedBasePrice = state.basePrice;
     state.updatedDestination = waypoint.destination;
@@ -186,6 +186,14 @@ export default class EditWaypointFormView extends AbstractStatefulView {
         this._handlers[type].element = '.event__rollup-btn';
         this._handlers[type].type = 'click';
         break;
+      case 'delete':
+        this._handlers[type] = {
+          outerCallback: callback,
+        };
+        this._handlers[type].cb = this.#setFormDeleteHandler(this._handlers[type].outerCallback);
+        this._handlers[type].element = '.event__reset-btn';
+        this._handlers[type].type = 'click';
+        break;
       default:
         throw new Error('Unknown type of event for this view');
     }
@@ -193,6 +201,13 @@ export default class EditWaypointFormView extends AbstractStatefulView {
   }
 
   #setFormSubmitHandler(callback) {
+    return (evt) => {
+      evt.preventDefault();
+      callback(EditWaypointFormView.parseStateToWaypoint(this._state));
+    };
+  }
+
+  #setFormDeleteHandler(callback) {
     return (evt) => {
       evt.preventDefault();
       callback(EditWaypointFormView.parseStateToWaypoint(this._state));
