@@ -30,7 +30,6 @@ export default class EmptyListView extends AbstractView {
   }
 
   get template () {
-    console.log(this.#currentFilter === FilterType.Everything)
     return getEmptyListTemplate(this.#currentFilter);
   }
 }

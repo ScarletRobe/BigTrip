@@ -1,9 +1,9 @@
 import ListSortView from '../view/list-sort-view.js';
 import WaypointsListView from '../view/waypoints-list-view.js';
 import EmptyListView from '../view/empty-list-view.js';
-import NewWaypointFormView from '../view/new-waypoint-form-view.js';
 
 import WaypointPresenter from './waypoint-presenter.js';
+import NewWaypointPresenter from './new-waypoint-presenter.js';
 
 import { RenderPosition, render, remove } from '../framework/render.js';
 import { SORT_OPTIONS, UpdateType, UserAction, FilterType } from '../consts.js';
@@ -11,7 +11,6 @@ import { SORT_OPTIONS, UpdateType, UserAction, FilterType } from '../consts.js';
 export default class TripEventsPresenter {
   #listSortComponent = null;
   #waypointsListComponent = new WaypointsListView();
-  #newWaypointFormComponent = null;
   #emptyListComponent = null;
 
   #container = null;
@@ -19,6 +18,7 @@ export default class TripEventsPresenter {
   #filterModel = null;
 
   #waypointPresentersList = new Map();
+  #newWaypointPresenter = null;
 
   #currentSortType = null;
   #currentFilter = FilterType.Everything;
@@ -116,12 +116,6 @@ export default class TripEventsPresenter {
     render(this.#emptyListComponent, this.#container);
   }
 
-  #renderNewWaypointForm() {
-    this.#newWaypointFormComponent = new NewWaypointFormView(this.#waypointsModel.offers, this.#waypointsModel.destinations);
-    render(this.#newWaypointFormComponent, this.#waypointsListComponent.element, RenderPosition.AFTERBEGIN);
-    // this.#newWaypointFormComponent.setListener('cancel', () => {})
-  }
-
   /**
    * Создает презентер под отдельную точку маршрута.
    * @param {object} waypoint - объект с информацией о точке маршрута.
@@ -139,6 +133,10 @@ export default class TripEventsPresenter {
   }
 
   #clearBoard() {
+    if (this.#newWaypointPresenter) {
+      this.#newWaypointPresenter.destroy();
+    }
+
     this.#waypointPresentersList.forEach((presenter) => {
       presenter.destroyWaypoint();
     });
@@ -184,8 +182,6 @@ export default class TripEventsPresenter {
       case UpdateType.MINOR:
         this.#currentSortType = null;
         this.#filterModel.setFilter(UpdateType.MINOR, FilterType.Everything);
-        // this.#clearBoard();
-        // this.#renderBoard(this.waypoints);
         break;
     }
   };
@@ -212,6 +208,10 @@ export default class TripEventsPresenter {
     this.#waypointPresentersList.forEach((presenter) => {
       presenter.resetView();
     });
+
+    if (this.#newWaypointPresenter) {
+      this.#newWaypointPresenter.destroy();
+    }
   };
 
   /**
@@ -227,11 +227,16 @@ export default class TripEventsPresenter {
     this.#renderWaypoints(this.#waypointsModel.waypoints);
   }
 
-  createNewWaypointFormComponentView() {
-    if (this.#newWaypointFormComponent) {
-      return;
-    }
-    this.#renderNewWaypointForm();
+  createNewWaypointFormComponentView(cancelCallback) {
+    this.#waypointPresentersList.forEach((presenter) => {
+      presenter.resetView();
+    });
+
+    this.#filterModel.setFilter(UpdateType.MINOR, FilterType.Everything);
+
+    this.#newWaypointPresenter = new NewWaypointPresenter(this.#waypointsListComponent.element, this.#viewActionHandler, this.#waypointsModel.offers, this.#waypointsModel.destinations);
+    this.#newWaypointPresenter.init(cancelCallback);
+
   }
 
   // Обработчики
