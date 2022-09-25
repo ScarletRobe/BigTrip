@@ -7,6 +7,8 @@ import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/material_blue.css';
 import { Russian } from 'flatpickr/dist/l10n/ru.js';
 
+import he from 'he';
+
 import { getDestinationListOptions } from './templates/destination-list-options.js';
 import { getEventTypeItems } from './templates/event-type-items.js';
 import { getEventAvailableOffers } from './templates/event-available-offers.js';
@@ -65,7 +67,7 @@ const getEditWaypointFormTemplate = (state, destinations, offers) => {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${state.updatedBasePrice}">
+            <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${state.updatedBasePrice}">
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -98,6 +100,10 @@ const getEditWaypointFormTemplate = (state, destinations, offers) => {
 export default class EditWaypointFormView extends AbstractStatefulView {
   #dateFromPicker = null;
   #dateToPicker = null;
+  #validation = {
+    basePrice: true,
+    destination: true,
+  };
 
   /**
    * @param {object} waypoint - объект с информацией о точке маршрута.
@@ -267,6 +273,15 @@ export default class EditWaypointFormView extends AbstractStatefulView {
     );
   }
 
+  #checkValidationError() {
+    if (Object.keys(this.#validation).every((validator) => this.#validation[validator])) {
+      this.element.querySelector('.event__save-btn').disabled = false;
+      return;
+    }
+
+    this.element.querySelector('.event__save-btn').disabled = true;
+  }
+
   // Обработчики
 
   #availableEventOffersClickHandler = (evt) => {
@@ -294,16 +309,31 @@ export default class EditWaypointFormView extends AbstractStatefulView {
   };
 
   #eventPriceInputHandler = (evt) => {
-    this._state.updatedBasePrice = evt.target.value;
+    this.#checkValidationError();
+    if(isNaN(evt.target.valueAsNumber)) {
+      this.element.querySelector('.event__field-group--price').style.borderBottom = '1px solid red';
+      this.#validation.basePrice = false;
+    } else {
+      this.#validation.basePrice = true;
+      this.element.querySelector('.event__field-group--price').style.borderBottom = '1px solid blue';
+      this._state.updatedBasePrice = evt.target.value;
+    }
+    this.#checkValidationError();
   };
 
   #eventDestinationInputHandler = (evt) => {
     evt.preventDefault();
+    this.element.querySelector('.event__field-group--destination').style.borderBottom = '1px solid blue';
     if (CITIES.includes(evt.target.value)) {
+      this.#validation.destination = true;
       this.updateElement({
         updatedDestination: CITIES.findIndex((city) => city === evt.target.value) + 1,
       });
+    } else {
+      this.element.querySelector('.event__field-group--destination').style.borderBottom = '1px solid red';
+      this.#validation.destination = false;
     }
+    this.#checkValidationError();
   };
 
   #eventDateChangeHandler = ([date], field) => {
