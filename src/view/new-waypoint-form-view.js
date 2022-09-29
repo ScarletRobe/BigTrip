@@ -175,7 +175,7 @@ export default class NewWaypointFormView extends AbstractStatefulView {
     this.#setDatepickers();
     this.element.querySelector('.event__available-offers').addEventListener('click', this.#availableEventOffersClickHandler);
     this.element.querySelector('.event__type-group').addEventListener('click', this.#eventTypeSelectorClickHandler);
-    this.element.querySelector('.event__input--price').addEventListener('input', this.#eventPriceInputHandler);
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#eventPriceChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('input', this.#eventDestinationInputHandler);
   }
 
@@ -259,7 +259,7 @@ export default class NewWaypointFormView extends AbstractStatefulView {
     }
   };
 
-  #eventPriceInputHandler = (evt) => {
+  #eventPriceChangeHandler = (evt) => {
     this.#checkValidationError();
     if(isNaN(evt.target.valueAsNumber)) {
       this.element.querySelector('.event__field-group--price').style.borderBottom = '1px solid red';
@@ -267,7 +267,7 @@ export default class NewWaypointFormView extends AbstractStatefulView {
     } else {
       this.#validation.basePrice = true;
       this.element.querySelector('.event__field-group--price').style.borderBottom = '1px solid blue';
-      this._state.updatedBasePrice = evt.target.value;
+      this._state.basePrice = evt.target.value;
     }
     this.#checkValidationError();
   };
