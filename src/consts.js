@@ -32,7 +32,7 @@ const TYPES = {
 
 // Waypoint
 const BASE_PRICE_RANGE = [300, 1500];
-const DATE = '2022-09-23T15:39:12.331Z';
+const DATE = '2022-09-26T15:39:12.331Z';
 
 // Offers
 const OFFERS = ['Choose meal', 'Choose seats', 'Upgrade to comfort class', 'Upgrade to business class', 'Add luggage', 'Business lounge'];

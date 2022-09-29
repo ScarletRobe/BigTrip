@@ -7,8 +7,6 @@ import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/material_blue.css';
 import { Russian } from 'flatpickr/dist/l10n/ru.js';
 
-import he from 'he';
-
 import { getDestinationListOptions } from './templates/destination-list-options.js';
 import { getEventTypeItems } from './templates/event-type-items.js';
 import { getEventAvailableOffers } from './templates/event-available-offers.js';

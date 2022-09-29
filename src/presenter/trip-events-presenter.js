@@ -23,10 +23,6 @@ export default class TripEventsPresenter {
   #currentSortType = null;
   #currentFilter = FilterType.Everything;
 
-  #waypointsSortedByDay = null;
-  #waypointsSortedByPrice = null;
-  #futureWaypoints = null;
-
   /**
    * @param {object} container - DOM элемент, в который будут помещены все элементы, созданные в ходе работы.
    * @param {object} waypointsModel - Модель, содержащая всю информацию о точках маршрута.
@@ -41,64 +37,40 @@ export default class TripEventsPresenter {
   }
 
   get waypoints() {
+    let result = this.#waypointsModel.waypoints;
+
     switch (this.#currentFilter) {
       case FilterType.Future:
-        return this.#futureWaypoints;
+        result = this.#filterFutureEvents(result);
+        break;
     }
 
     switch (this.#currentSortType) {
       case SORT_OPTIONS.day.name:
-        return this.#waypointsSortedByDay;
+        result = this.#sortByDay(result);
+        break;
       case SORT_OPTIONS.price.name:
-        return this.#waypointsSortedByPrice;
+        result = this.#sortByPrice(result);
+        break;
     }
 
 
-    return this.#waypointsModel.waypoints;
+    return result;
   }
 
-  #sortByDay() {
-    if (this.#waypointsSortedByDay) {
-      this.#currentSortType = SORT_OPTIONS.day.name;
-      this.#clearBoard();
-      this.#renderBoard(this.#waypointsSortedByDay);
-      return;
-    }
-
-    this.#waypointsSortedByDay = this.waypoints.slice()
+  #sortByDay(waypoints) {
+    return waypoints.slice()
       .sort((a, b) => a.dateFrom.diff(b.dateFrom));
-    this.#currentSortType = SORT_OPTIONS.day.name;
-    this.#clearBoard();
-    this.#renderBoard(this.#waypointsSortedByDay);
   }
 
-  #sortByPrice() {
-    if (this.#waypointsSortedByPrice) {
-      this.#currentSortType = SORT_OPTIONS.price.name;
-      this.#clearBoard();
-      this.#renderBoard(this.#waypointsSortedByPrice);
-      return;
-    }
-
-    this.#waypointsSortedByPrice = this.waypoints.slice()
+  #sortByPrice(waypoints) {
+    return waypoints.slice()
       .sort((a, b) => b.basePrice - a.basePrice);
-    this.#currentSortType = SORT_OPTIONS.price.name;
-    this.#clearBoard();
-    this.#renderBoard(this.#waypointsSortedByPrice);
   }
 
-  #filterFutureEvents() {
-    this.#currentFilter = FilterType.Future;
-    if (this.#futureWaypoints) {
-      this.#clearBoard();
-      this.#renderBoard(this.#futureWaypoints);
-      return;
-    }
-
-    this.#futureWaypoints = this.#waypointsModel.waypoints.slice()
+  #filterFutureEvents(waypoints) {
+    return waypoints.slice()
       .filter((a) => a.dateFrom.toDate() >= new Date());
-    this.#clearBoard();
-    this.#renderBoard(this.#futureWaypoints);
   }
 
   #renderSort() {
@@ -121,7 +93,7 @@ export default class TripEventsPresenter {
    * @param {object} waypoint - объект с информацией о точке маршрута.
    */
   #renderWaypoints(waypoints) {
-    if (!this.waypoints.length) {
+    if (!waypoints.length) {
       this.#renderEmptyList();
     }
 
@@ -157,63 +129,6 @@ export default class TripEventsPresenter {
     this.#renderWaypoints(waypoints);
   }
 
-
-  #viewActionHandler = (actionType, updateType, update) => {
-    switch (actionType) {
-      case UserAction.UPDATE_WAYPOINT:
-        this.#waypointsModel.updateWaypoint(updateType, update);
-        break;
-      case UserAction.ADD_WAYPOINT:
-        this.#waypointsModel.addWaypoint(updateType, update);
-        break;
-      case UserAction.DELETE_WAYPOINT:
-        this.#waypointsModel.deleteWaypoint(updateType, update);
-        break;
-    }
-  };
-
-  #modelEventHandler = (updateType, data) => {
-    this.#waypointsSortedByDay = null;
-    this.#waypointsSortedByPrice = null;
-    switch (updateType) {
-      case UpdateType.PATCH:
-        this.#waypointPresentersList.get(data.id).init(data);
-        break;
-      case UpdateType.MINOR:
-        this.#currentSortType = null;
-        this.#filterModel.setFilter(UpdateType.MINOR, FilterType.Everything);
-        break;
-    }
-  };
-
-  #filterModelEventHandler = (_, currentFilter) => {
-    this.#waypointsSortedByDay = null;
-    this.#waypointsSortedByPrice = null;
-    this.#currentSortType = null;
-    this.#futureWaypoints = null;
-
-    switch (currentFilter) {
-      case FilterType.Future:
-        this.#filterFutureEvents();
-        break;
-      case FilterType.Everything:
-        this.#currentFilter = FilterType.Everything;
-        this.#clearBoard();
-        this.#renderBoard(this.#waypointsModel.waypoints);
-        break;
-    }
-  };
-
-  #waypointModeChangeHandler = () => {
-    this.#waypointPresentersList.forEach((presenter) => {
-      presenter.resetView();
-    });
-
-    if (this.#newWaypointPresenter) {
-      this.#newWaypointPresenter.destroy();
-    }
-  };
-
   /**
    * Отрисовывает базовые элементы.
    */
@@ -244,10 +159,63 @@ export default class TripEventsPresenter {
   #listSortClickHandler = (type) => {
     switch(type) {
       case 'day':
-        this.#sortByDay();
+        this.#currentSortType = SORT_OPTIONS.day.name;
         break;
       case 'price':
-        this.#sortByPrice();
+        this.#currentSortType = SORT_OPTIONS.price.name;
+        break;
+    }
+    this.#clearBoard();
+    this.#renderBoard(this.waypoints);
+  };
+
+  #waypointModeChangeHandler = () => {
+    this.#waypointPresentersList.forEach((presenter) => {
+      presenter.resetView();
+    });
+
+    if (this.#newWaypointPresenter) {
+      this.#newWaypointPresenter.destroy();
+    }
+  };
+
+  #filterModelEventHandler = (_, currentFilter) => {
+    this.#currentSortType = this.#currentSortType ? SORT_OPTIONS.day.name : null;
+
+    switch (currentFilter) {
+      case FilterType.Future:
+        this.#currentFilter = FilterType.Future;
+        break;
+      case FilterType.Everything:
+        this.#currentFilter = FilterType.Everything;
+        break;
+    }
+    this.#clearBoard();
+    this.#renderBoard(this.waypoints);
+  };
+
+  #modelEventHandler = (updateType, data) => {
+    switch (updateType) {
+      case UpdateType.PATCH:
+        this.#waypointPresentersList.get(data.id).init(data);
+        break;
+      case UpdateType.MINOR:
+        this.#currentSortType = null;
+        this.#filterModel.setFilter(UpdateType.MINOR, FilterType.Everything);
+        break;
+    }
+  };
+
+  #viewActionHandler = (actionType, updateType, update) => {
+    switch (actionType) {
+      case UserAction.UPDATE_WAYPOINT:
+        this.#waypointsModel.updateWaypoint(updateType, update);
+        break;
+      case UserAction.ADD_WAYPOINT:
+        this.#waypointsModel.addWaypoint(updateType, update);
+        break;
+      case UserAction.DELETE_WAYPOINT:
+        this.#waypointsModel.deleteWaypoint(updateType, update);
         break;
     }
   };

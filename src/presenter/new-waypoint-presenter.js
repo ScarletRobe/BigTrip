@@ -9,7 +9,6 @@ export default class NewWaypointPresenter {
   #container = null;
   #addWaypointHandler = null;
   #cancelCallback = null;
-  #newWaypointContainer = null;
   #newWaypointFormComponent = null;
   #offers = null;
   #destinations = null;
@@ -24,7 +23,7 @@ export default class NewWaypointPresenter {
   init(cancelCallback) {
     this.#cancelCallback = cancelCallback;
 
-    if (this.#newWaypointFormComponent !== null) {
+    if (this.#newWaypointFormComponent) {
       return;
     }
 
@@ -38,7 +37,7 @@ export default class NewWaypointPresenter {
   }
 
   destroy() {
-    if (this.#newWaypointFormComponent === null) {
+    if (!this.#newWaypointFormComponent) {
       return;
     }
 
