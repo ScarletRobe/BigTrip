@@ -32,7 +32,7 @@ const TYPES = {
 
 // Waypoint
 const BASE_PRICE_RANGE = [300, 1500];
-const DATE = '2022-08-18T15:39:12.331Z';
+const DATE = '2022-09-23T15:39:12.331Z';
 
 // Offers
 const OFFERS = ['Choose meal', 'Choose seats', 'Upgrade to comfort class', 'Upgrade to business class', 'Add luggage', 'Business lounge'];
@@ -52,19 +52,41 @@ const TRIP_EVENTS_AMOUNT = 10;
 const SORT_OPTIONS = {
   day: {
     sort: true,
+    name: 'day',
   },
   event: {
     sort: false,
+    name: 'event',
   },
   time: {
     sort: false,
+    name: 'time',
   },
   price: {
     sort: true,
+    name: 'price',
   },
   offers: {
     sort: false,
+    name: 'offers',
   }
+};
+
+const UserAction = {
+  UPDATE_WAYPOINT: 'UPDATE_WAYPOINT',
+  ADD_WAYPOINT: 'ADD_WAYPOINT',
+  DELETE_WAYPOINT: 'DELETE_WAYPOINT',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+const FilterType = {
+  Everything: 'everything',
+  Future: 'future',
 };
 
 export {
@@ -80,4 +102,7 @@ export {
   DATE,
   OFFERS_AMOUNT,
   SORT_OPTIONS,
+  UserAction,
+  UpdateType,
+  FilterType,
 };

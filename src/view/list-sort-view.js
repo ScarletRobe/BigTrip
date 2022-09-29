@@ -2,10 +2,10 @@ import AbstractView from '../framework/view/abstract-view.js';
 import { SORT_OPTIONS } from '../consts.js';
 import { capitalizeFirstLetter } from '../utils.js';
 
-const generateTripSortItems = (waypointsAmount) => Object.keys(SORT_OPTIONS).map((option) => {
+const generateTripSortItems = (waypointsAmount, currentSortType) => Object.keys(SORT_OPTIONS).map((option) => {
   const disabled = waypointsAmount && SORT_OPTIONS[option].sort ? '' : 'disabled';
   return `<div class="trip-sort__item  trip-sort__item--${option}">
-  <input id="sort-${option}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${option}" ${disabled}>
+  <input id="sort-${option}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${option}" ${disabled} ${option === currentSortType ? 'checked' : ''}>
   <label class="trip-sort__btn" for="sort-${option}" data-sort-type="${option}">${capitalizeFirstLetter(option)}</label>
   </div>`;
 }).join('\n');
@@ -14,29 +14,32 @@ const generateTripSortItems = (waypointsAmount) => Object.keys(SORT_OPTIONS).map
  * Возвращает шаблон элемента сортировки событий.
  * @returns {string} строка с HTML кодом.
  */
-const getListSortElement = (waypointsAmount) => (
+const getListSortElement = (waypointsAmount, currentSortType) => (
   `<div>
     <form class="trip-events__trip-sort  trip-sort" action="#" method="get">
 
-      ${generateTripSortItems(waypointsAmount)}
+      ${generateTripSortItems(waypointsAmount, currentSortType)}
 
     </form>
   </div>`
 );
 
 export default class ListSortView extends AbstractView {
-  constructor(waypointsAmount) {
+  #currentSortType = null;
+
+  constructor(waypointsAmount, currentSortType) {
     super();
     this.waypointsAmount = waypointsAmount;
+    this.#currentSortType = currentSortType;
   }
 
   get template () {
-    return getListSortElement(this.waypointsAmount);
+    return getListSortElement(this.waypointsAmount, this.#currentSortType);
   }
 
   #setSortClickHandler(callback) {
     return (evt) => {
-      if (evt.target.tagName === 'LABEL' && SORT_OPTIONS[evt.target.dataset.sortType].sort && !evt.target.control.checked) {
+      if (evt.target.tagName === 'LABEL' && SORT_OPTIONS[evt.target.dataset.sortType].sort && !evt.target.control.checked && !evt.target.control.disabled) {
         evt.preventDefault();
         callback(evt.target.dataset.sortType);
         evt.target.control.checked = true;

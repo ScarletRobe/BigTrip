@@ -63,7 +63,7 @@ const getNewPointFormTemplate = (offers, destinations, state) => {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${state.basePrice}">
+            <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${state.basePrice}">
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -96,6 +96,10 @@ const getNewPointFormTemplate = (offers, destinations, state) => {
 export default class NewWaypointFormView extends AbstractStatefulView {
   #dateFromPicker = null;
   #dateToPicker = null;
+  #validation = {
+    basePrice: true,
+    destination: true,
+  };
 
   constructor(offers, destinations) {
     super();
@@ -114,7 +118,7 @@ export default class NewWaypointFormView extends AbstractStatefulView {
     const state = {
       id: nanoid(),
       type: 'flight',
-      basePrice: '',
+      basePrice: 0,
       destination: 1,
       offers: new Set(),
       dateFrom: formatDate(new Date()),
@@ -220,6 +224,15 @@ export default class NewWaypointFormView extends AbstractStatefulView {
     );
   }
 
+  #checkValidationError() {
+    if (Object.keys(this.#validation).every((validator) => this.#validation[validator])) {
+      this.element.querySelector('.event__save-btn').disabled = false;
+      return;
+    }
+
+    this.element.querySelector('.event__save-btn').disabled = true;
+  }
+
   // Обработчики
 
   #availableEventOffersClickHandler = (evt) => {
@@ -247,16 +260,31 @@ export default class NewWaypointFormView extends AbstractStatefulView {
   };
 
   #eventPriceInputHandler = (evt) => {
-    this._state.basePrice = evt.target.value;
+    this.#checkValidationError();
+    if(isNaN(evt.target.valueAsNumber)) {
+      this.element.querySelector('.event__field-group--price').style.borderBottom = '1px solid red';
+      this.#validation.basePrice = false;
+    } else {
+      this.#validation.basePrice = true;
+      this.element.querySelector('.event__field-group--price').style.borderBottom = '1px solid blue';
+      this._state.updatedBasePrice = evt.target.value;
+    }
+    this.#checkValidationError();
   };
 
   #eventDestinationInputHandler = (evt) => {
     evt.preventDefault();
+    this.element.querySelector('.event__field-group--destination').style.borderBottom = '1px solid blue';
     if (CITIES.includes(evt.target.value)) {
+      this.#validation.destination = true;
       this.updateElement({
-        destination: CITIES.findIndex((city) => city === evt.target.value) + 1,
+        updatedDestination: CITIES.findIndex((city) => city === evt.target.value) + 1,
       });
+    } else {
+      this.element.querySelector('.event__field-group--destination').style.borderBottom = '1px solid red';
+      this.#validation.destination = false;
     }
+    this.#checkValidationError();
   };
 
   #eventDateChangeHandler = ([date], field) => {

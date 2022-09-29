@@ -3,6 +3,7 @@ import WaypointItemView from '../view/waypoint-item-view.js';
 
 import { render, replace, remove } from '../framework/render.js';
 import { isEscape, getSelectedDestination, getSelectedOffers } from '../utils.js';
+import { UserAction, UpdateType } from '../consts.js';
 
 export default class WaypointPresenter {
   #waypointComponent = null;
@@ -49,6 +50,7 @@ export default class WaypointPresenter {
 
     this.#waypointEditFormComponent.setListener('submit', this.#waypointEditFormSubmitHandler);
     this.#waypointEditFormComponent.setListener('clickOnRollupBtn', this.#waypointEditFormRollupBtnClickHandler);
+    this.#waypointEditFormComponent.setListener('delete', this.#waypointEditFormDeleteHandler);
 
     document.addEventListener('keydown', this.#documentKeydownHandler);
 
@@ -88,7 +90,7 @@ export default class WaypointPresenter {
     const prevWaypointEditFormComponent = this.#waypointEditFormComponent;
 
     this.#waypoint = waypoint;
-    this.#selectedDestination = getSelectedDestination(this.#waypointsModel.destinations ,waypoint);
+    this.#selectedDestination = getSelectedDestination(this.#waypointsModel.destinations, waypoint);
     this.#selectedOffers = getSelectedOffers(this.#waypointsModel.offers, waypoint);
 
 
@@ -129,6 +131,26 @@ export default class WaypointPresenter {
   };
 
   #waypointEditFormSubmitHandler = (updatedWaypoint) => {
-    this.#waypointUpdateHandler(updatedWaypoint);
+    const getUpdateTypeVersion = (update) => {
+      if(this.#waypoint.basePrice !== update.basePrice || this.#waypoint.dateFrom !== update.dateFrom) {
+        return UpdateType.MINOR;
+      }
+
+      return UpdateType.PATCH;
+    };
+
+    this.#waypointUpdateHandler(
+      UserAction.UPDATE_WAYPOINT,
+      getUpdateTypeVersion(updatedWaypoint),
+      updatedWaypoint,
+    );
+  };
+
+  #waypointEditFormDeleteHandler = (waypoint) => {
+    this.#waypointUpdateHandler(
+      UserAction.DELETE_WAYPOINT,
+      UpdateType.MINOR,
+      waypoint,
+    );
   };
 }
