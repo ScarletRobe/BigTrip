@@ -36,6 +36,10 @@ export default class FilterPresenter {
     this.init();
   };
 
+  /**
+   * Обрабатывает смену типа фильтра
+   * @param {string} filterType - тип выбранного фильтра
+   */
   #filterTypeChangeHandler = (filterType) => {
     if (this.#filterModel.filter === filterType) {
       return;

@@ -10,7 +10,7 @@ import 'flatpickr/dist/themes/material_blue.css';
 import { Russian } from 'flatpickr/dist/l10n/ru.js';
 
 import { humanizeDate, getSelectedDestination, getSelectedOffers, formatDate } from '../utils.js';
-import { TYPES, CITIES } from '../consts.js';
+import { TYPES } from '../consts.js';
 import { nanoid } from 'nanoid';
 
 /**
@@ -275,10 +275,11 @@ export default class NewWaypointFormView extends AbstractStatefulView {
   #eventDestinationInputHandler = (evt) => {
     evt.preventDefault();
     this.element.querySelector('.event__field-group--destination').style.borderBottom = '1px solid blue';
-    if (CITIES.includes(evt.target.value)) {
+    const choosedDestination = this.destinations.find((destination) => destination.name === evt.target.value);
+    if (choosedDestination) {
       this.#validation.destination = true;
       this.updateElement({
-        updatedDestination: CITIES.findIndex((city) => city === evt.target.value) + 1,
+        updatedDestination: choosedDestination.id,
       });
     } else {
       this.element.querySelector('.event__field-group--destination').style.borderBottom = '1px solid red';

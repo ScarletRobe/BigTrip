@@ -1,15 +1,19 @@
 import Observable from '../framework/observable.js';
 
-import { TRIP_EVENTS_AMOUNT } from '../consts.js';
-
-import { generateWaypoint } from '../mock/waypoint.js';
-import { generateOffersByType } from '../mock/offers.js';
-import { generateDestinations } from '../mock/destinations.js';
+import { UpdateType } from '../consts.js';
+import dayjs from 'dayjs';
 
 export default class WaypointsModel extends Observable {
-  #waypoints = Array.from({length: TRIP_EVENTS_AMOUNT}, () => generateWaypoint());
-  #offers = generateOffersByType();
-  #destinations = generateDestinations();
+  #waypointsApiService = null;
+
+  #waypoints = [];
+  #offers = [];
+  #destinations = [];
+
+  constructor(waypointsApiService) {
+    super();
+    this.#waypointsApiService = waypointsApiService;
+  }
 
   get waypoints () {
     return this.#waypoints;
@@ -61,5 +65,37 @@ export default class WaypointsModel extends Observable {
 
   get destinations () {
     return this.#destinations;
+  }
+
+  #adaptToClient(waypoint) {
+    const adaptedWaypoint = {
+      ...waypoint,
+      basePrice: waypoint.base_price,
+      dateFrom: dayjs(waypoint.date_from),
+      dateTo: dayjs(waypoint.date_to),
+      isFavorite: waypoint.is_favorite,
+    };
+
+    delete adaptedWaypoint.base_price;
+    delete adaptedWaypoint.date_from;
+    delete adaptedWaypoint.date_to;
+    delete adaptedWaypoint.is_favorite;
+
+    return adaptedWaypoint;
+  }
+
+  async init() {
+    try {
+      const waypoints = await this.#waypointsApiService.getWaypoints();
+      this.#destinations = await this.#waypointsApiService.getDestinations();
+      this.#offers = await this.#waypointsApiService.getOffers();
+      this.#waypoints = waypoints.map(this.#adaptToClient);
+    } catch(err) {
+      this.#waypoints = [];
+      this.#destinations = [];
+      this.#offers = [];
+    }
+
+    this._notify(UpdateType.INIT);
   }
 }

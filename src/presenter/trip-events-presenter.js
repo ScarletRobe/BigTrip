@@ -1,6 +1,7 @@
 import ListSortView from '../view/list-sort-view.js';
 import WaypointsListView from '../view/waypoints-list-view.js';
 import EmptyListView from '../view/empty-list-view.js';
+import LoadingView from '../view/loading-view.js';
 
 import WaypointPresenter from './waypoint-presenter.js';
 import NewWaypointPresenter from './new-waypoint-presenter.js';
@@ -12,6 +13,7 @@ export default class TripEventsPresenter {
   #listSortComponent = null;
   #waypointsListComponent = new WaypointsListView();
   #emptyListComponent = null;
+  #loadingComponent = new LoadingView();
 
   #container = null;
   #waypointsModel = null;
@@ -22,6 +24,7 @@ export default class TripEventsPresenter {
 
   #currentSortType = null;
   #currentFilter = FilterType.Everything;
+  #isLoading = true;
 
   /**
    * @param {object} container - DOM элемент, в который будут помещены все элементы, созданные в ходе работы.
@@ -54,7 +57,6 @@ export default class TripEventsPresenter {
         break;
     }
 
-
     return result;
   }
 
@@ -84,6 +86,7 @@ export default class TripEventsPresenter {
   }
 
   #renderEmptyList() {
+    remove(this.#loadingComponent);
     this.#emptyListComponent = new EmptyListView(this.#currentFilter);
     render(this.#emptyListComponent, this.#container);
   }
@@ -125,8 +128,18 @@ export default class TripEventsPresenter {
     if (this.#emptyListComponent) {
       remove(this.#emptyListComponent);
     }
+
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     this.#renderSort();
     this.#renderWaypoints(waypoints);
+  }
+
+  #renderLoading() {
+    render(this.#loadingComponent, this.#container.element, RenderPosition.AFTERBEGIN);
   }
 
   /**
@@ -135,10 +148,6 @@ export default class TripEventsPresenter {
   init() {
     this.#renderSort();
     this.#renderWaypointsList();
-
-    if (!this.#waypointsModel.waypoints.length) {
-      this.#renderEmptyList();
-    }
     this.#renderWaypoints(this.#waypointsModel.waypoints);
   }
 
@@ -202,6 +211,12 @@ export default class TripEventsPresenter {
       case UpdateType.MINOR:
         this.#currentSortType = null;
         this.#filterModel.setFilter(UpdateType.MINOR, FilterType.Everything);
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#clearBoard();
+        this.#renderBoard(this.waypoints);
         break;
     }
   };

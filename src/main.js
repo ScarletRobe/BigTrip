@@ -7,6 +7,7 @@ import FilterModel from './model/filter-model.js';
 import AddEventBtnView from './view/add-event-btn-view.js';
 
 import { render } from './framework/render.js';
+import WaypointsApiService from './waypoints-api-service.js';
 
 // Элементы DOM
 
@@ -16,7 +17,10 @@ const addEventBtnContainer = document.querySelector('.trip-main');
 
 // Переменные
 
-const waypointsModel = new WaypointsModel();
+const AUTHORIZATION = 'Basic scrltrb55';
+const END_POINT = 'https://18.ecmascript.pages.academy/big-trip';
+
+const waypointsModel = new WaypointsModel(new WaypointsApiService(END_POINT, AUTHORIZATION));
 const filterModel = new FilterModel();
 
 const tripEventsPresenter = new TripEventsPresenter(tripEventsContainerElement, waypointsModel, filterModel);
@@ -35,9 +39,11 @@ const addEventBtnClickHandler = () => {
   addEventBtnComponent.manageDisable(true);
 };
 
-render(addEventBtnComponent, addEventBtnContainer);
-addEventBtnComponent.setListener('click', addEventBtnClickHandler);
-
 filterPresenter.init();
 tripEventsPresenter.init();
+waypointsModel.init()
+  .finally(() => {
+    render(addEventBtnComponent, addEventBtnContainer);
+    addEventBtnComponent.setListener('click', addEventBtnClickHandler);
+  });
 
