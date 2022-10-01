@@ -60,16 +60,31 @@ export default class TripEventsPresenter {
     return result;
   }
 
+  /**
+   * Сортирует точки маршрута по дате.
+   * @param {array} waypoints - массив точек маршрута.
+   * @returns отсортированные точки маршрута.
+   */
   #sortByDay(waypoints) {
     return waypoints.slice()
       .sort((a, b) => a.dateFrom.diff(b.dateFrom));
   }
 
+  /**
+   * Сортирует точки маршрута по цене.
+   * @param {array} waypoints - массив точек маршрута.
+   * @returns отсортированные точки маршрута.
+   */
   #sortByPrice(waypoints) {
     return waypoints.slice()
       .sort((a, b) => b.basePrice - a.basePrice);
   }
 
+  /**
+   * Оставляет точки маршрута, которые еще не произошли.
+   * @param {array} waypoints - массив точек маршрута.
+   * @returns отфильтрованные точки маршрута
+   */
   #filterFutureEvents(waypoints) {
     return waypoints.slice()
       .filter((a) => a.dateFrom.toDate() >= new Date());
@@ -93,7 +108,7 @@ export default class TripEventsPresenter {
 
   /**
    * Создает презентер под отдельную точку маршрута.
-   * @param {object} waypoint - объект с информацией о точке маршрута.
+   * @param {array} waypoints - массив точек маршрута.
    */
   #renderWaypoints(waypoints) {
     if (this.#isLoading) {
@@ -128,14 +143,13 @@ export default class TripEventsPresenter {
     remove(this.#listSortComponent);
   }
 
+  /**
+   * Отрисовывает страницу(сортировка и точки маршрута)
+   * @param {array} waypoints - массив точек маршрута.
+   */
   #renderBoard(waypoints) {
     if (this.#emptyListComponent) {
       remove(this.#emptyListComponent);
-    }
-
-    if (this.#isLoading) {
-      this.#renderLoading();
-      return;
     }
 
     this.#renderSort();
@@ -154,6 +168,10 @@ export default class TripEventsPresenter {
     this.#renderWaypointsList();
   }
 
+  /**
+   * Создает форму создания новой точки маршрута.
+   * @param {function} cancelCallback - колбэк, который будет вызван при закрытии формы.
+   */
   createNewWaypointFormComponentView(cancelCallback) {
     this.#waypointPresentersList.forEach((presenter) => {
       presenter.resetView();
@@ -168,6 +186,10 @@ export default class TripEventsPresenter {
 
   // Обработчики
 
+  /**
+   * Обрабатывает изменения типа сортировки.
+   * @param {string} type - выбранный тип сортировки.
+   */
   #listSortClickHandler = (type) => {
     switch(type) {
       case 'day':
@@ -191,6 +213,10 @@ export default class TripEventsPresenter {
     }
   };
 
+  /**
+   * Обрабатывает изменения в модели фильтров.
+   * @param {object} currentFilter - текущий фильтр.
+   */
   #filterModelEventHandler = (_, currentFilter) => {
     this.#currentSortType = this.#currentSortType ? SORT_OPTIONS.day.name : null;
 
@@ -206,6 +232,11 @@ export default class TripEventsPresenter {
     this.#renderBoard(this.waypoints);
   };
 
+  /**
+   * Обрабатывает изменения в модели точек маршрута.
+   * @param {string} updateType - тип обновления.
+   * @param {object} data - измененнная точка маршрута.
+   */
   #modelEventHandler = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
@@ -224,6 +255,12 @@ export default class TripEventsPresenter {
     }
   };
 
+  /**
+   * Обрабатывает изменения в представлении точек маршрута.
+   * @param {string} actionType - тип действия.
+   * @param {string} updateType - тип обновления.
+   * @param {object} update - измененнная точка маршрута.
+   */
   #viewActionHandler = (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.UPDATE_WAYPOINT:

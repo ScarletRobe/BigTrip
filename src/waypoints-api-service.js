@@ -23,6 +23,11 @@ export default class WaypointsApiService extends ApiService {
       .then(ApiService.parseResponse);
   }
 
+  /**
+   * Обновляет точку маршрута на сервере.
+   * @param {object} waypoint - объект с информацией о точке маршрута.
+   * @returns {Promise} распарсенный ответ.
+   */
   async updateWaypoint(waypoint) {
     const response = await this._load({
       url: `points/${waypoint.id}`,
@@ -36,6 +41,11 @@ export default class WaypointsApiService extends ApiService {
     return parsedResponse;
   }
 
+  /**
+   * Добалвяет точку маршрута на сервер.
+   * @param {object} waypoint - объект с информацией о точке маршрута.
+   * @returns {Promise} распарсенный ответ.
+   */
   async addWaypoint(waypoint) {
     const response = await this._load({
       url: 'points',
@@ -49,6 +59,11 @@ export default class WaypointsApiService extends ApiService {
     return parsedResponse;
   }
 
+  /**
+   * Удаляет точку маршрута на сервере.
+   * @param {object} waypoint - объект с информацией о точке маршрута.
+   * @returns {Promise} распарсенный ответ.
+   */
   async deleteWaypoint(waypoint) {
     const response = await this._load({
       url: `points/${waypoint.id}`,
@@ -58,6 +73,11 @@ export default class WaypointsApiService extends ApiService {
     return response;
   }
 
+  /**
+   * Адаптирует объект точки маршрута для отправки на сервер.
+   * @param {object} waypoint - объект с информацией о точке маршрута.
+   * @returns {object} точка маршрута в формате, привычном для сервера.
+   */
   #adaptToServer(waypoint) {
     const adaptedWaypoint = {
       ...waypoint,

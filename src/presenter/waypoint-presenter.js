@@ -130,6 +130,10 @@ export default class WaypointPresenter {
     this.#replaceEditFormToWaypoint();
   };
 
+  /**
+   * Обрабатывает отправку формы редактирования.
+   * @param {object} updatedWaypoint - измененная точка маршрута.
+   */
   #waypointEditFormSubmitHandler = (updatedWaypoint) => {
     const getUpdateTypeVersion = (update) => {
       if(this.#waypoint.basePrice !== update.basePrice || this.#waypoint.dateFrom !== update.dateFrom) {
@@ -146,6 +150,10 @@ export default class WaypointPresenter {
     );
   };
 
+  /**
+   * Обрабатывает нажатие на кнопку удаления точки маршрута.
+   * @param {object} waypoint - объект с информацией о точке маршрута.
+   */
   #waypointEditFormDeleteHandler = (waypoint) => {
     this.#waypointUpdateHandler(
       UserAction.DELETE_WAYPOINT,

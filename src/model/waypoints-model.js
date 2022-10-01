@@ -10,6 +10,10 @@ export default class WaypointsModel extends Observable {
   #offers = [];
   #destinations = [];
 
+  /**
+   *
+   * @param {object} waypointsApiService - объект класса WaypointsApiService.
+   */
   constructor(waypointsApiService) {
     super();
     this.#waypointsApiService = waypointsApiService;
@@ -19,6 +23,19 @@ export default class WaypointsModel extends Observable {
     return this.#waypoints;
   }
 
+  get offers () {
+    return this.#offers;
+  }
+
+  get destinations () {
+    return this.#destinations;
+  }
+
+  /**
+   * Обновляет точку маршрута.
+   * @param {string} updateType - тип обновления.
+   * @param {object} update - измененная точка маршрута.
+   */
   async updateWaypoint(updateType, update) {
     const index = this.#waypoints.findIndex((item) => item.id === update.id);
 
@@ -40,7 +57,12 @@ export default class WaypointsModel extends Observable {
     }
   }
 
-  addWaypoint = async (updateType, update) => {
+  /**
+   * Добавляет точку маршрута.
+   * @param {string} updateType - тип обновления.
+   * @param {object} update - новая точка маршрута.
+   */
+  async addWaypoint(updateType, update) {
     try {
       const response = await this.#waypointsApiService.addWaypoint(update);
       const newWaypoint = this.#adaptToClient(response);
@@ -52,9 +74,14 @@ export default class WaypointsModel extends Observable {
     } catch(err) {
       throw new Error('Can\'t add waypoint');
     }
-  };
+  }
 
-  deleteWaypoint = async (updateType, update) => {
+  /**
+   * Удаляет точку маршрута.
+   * @param {string} updateType - тип обновления.
+   * @param {object} update - удаляемая точка маршрута.
+   */
+  async deleteWaypoint(updateType, update) {
     const index = this.#waypoints.findIndex((task) => task.id === update.id);
 
     if (index === -1) {
@@ -73,16 +100,13 @@ export default class WaypointsModel extends Observable {
     }
 
     this._notify(updateType);
-  };
-
-  get offers () {
-    return this.#offers;
   }
 
-  get destinations () {
-    return this.#destinations;
-  }
-
+  /**
+   * Адаптирует объект точки маршрута для хранения на стороне клиента.
+   * @param {object} waypoint - объект с информацией о точке маршрута.
+   * @returns {object} точка маршрута в формате, привычном для стороны клиента.
+   */
   #adaptToClient(waypoint) {
     const adaptedWaypoint = {
       ...waypoint,

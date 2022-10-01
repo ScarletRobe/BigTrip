@@ -20,6 +20,10 @@ export default class NewWaypointPresenter {
     this.#destinations = destinations;
   }
 
+  /**
+   *
+   * @param {function} cancelCallback - фукнция, которая будет вызвана при отмене формы создания новой точки маршрута.
+   */
   init(cancelCallback) {
     this.#cancelCallback = cancelCallback;
 
@@ -49,6 +53,10 @@ export default class NewWaypointPresenter {
     document.removeEventListener('keydown', this.#documentKeydownHandler);
   }
 
+  /**
+   * Обрабатывает отправку формы создания новой точки маршрута.
+   * @param {object} waypoint - точка маршрута.
+   */
   #newWaypointFormSubmitHandler = (waypoint) => {
     this.#addWaypointHandler(
       UserAction.ADD_WAYPOINT,
@@ -62,6 +70,10 @@ export default class NewWaypointPresenter {
     this.destroy();
   };
 
+  /**
+   * Обрабатывает нажатие клавиши.
+   * @param {object} evt - объект события
+   */
   #documentKeydownHandler = (evt) => {
     if (isEscape(evt.code)) {
       evt.preventDefault();
