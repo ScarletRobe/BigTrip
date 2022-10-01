@@ -7,7 +7,13 @@ import WaypointPresenter from './waypoint-presenter.js';
 import NewWaypointPresenter from './new-waypoint-presenter.js';
 
 import { RenderPosition, render, remove } from '../framework/render.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import { SORT_OPTIONS, UpdateType, UserAction, FilterType } from '../consts.js';
+
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 
 export default class TripEventsPresenter {
   #listSortComponent = null;
@@ -25,6 +31,7 @@ export default class TripEventsPresenter {
   #currentSortType = SORT_OPTIONS.day.name;
   #currentFilter = FilterType.Everything;
   #isLoading = true;
+  #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
 
   /**
    * @param {object} container - DOM элемент, в который будут помещены все элементы, созданные в ходе работы.
@@ -262,6 +269,7 @@ export default class TripEventsPresenter {
    * @param {object} update - измененнная точка маршрута.
    */
   #viewActionHandler = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
     switch (actionType) {
       case UserAction.UPDATE_WAYPOINT:
         this.#waypointPresentersList.get(update.id).setSaving();
@@ -288,5 +296,6 @@ export default class TripEventsPresenter {
         }
         break;
     }
+    this.#uiBlocker.unblock();
   };
 }
