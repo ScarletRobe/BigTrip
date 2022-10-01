@@ -314,7 +314,7 @@ export default class EditWaypointFormView extends AbstractStatefulView {
     } else {
       this.#validation.basePrice = true;
       this.element.querySelector('.event__field-group--price').style.borderBottom = '1px solid blue';
-      this._state.updatedBasePrice = evt.target.value;
+      this._state.updatedBasePrice = evt.target.valueAsNumber;
     }
     this.#checkValidationError();
   };

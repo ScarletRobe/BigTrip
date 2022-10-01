@@ -209,8 +209,8 @@ export default class TripEventsPresenter {
         this.#waypointPresentersList.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
-        this.#currentSortType = null;
-        this.#filterModel.setFilter(UpdateType.MINOR, FilterType.Everything);
+        this.#clearBoard();
+        this.#renderBoard(this.waypoints);
         break;
       case UpdateType.INIT:
         this.#isLoading = false;
