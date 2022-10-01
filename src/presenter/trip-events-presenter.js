@@ -96,6 +96,10 @@ export default class TripEventsPresenter {
    * @param {object} waypoint - объект с информацией о точке маршрута.
    */
   #renderWaypoints(waypoints) {
+    if (this.#isLoading) {
+      return;
+    }
+
     if (!waypoints.length) {
       this.#renderEmptyList();
     }
@@ -139,16 +143,15 @@ export default class TripEventsPresenter {
   }
 
   #renderLoading() {
-    render(this.#loadingComponent, this.#container.element, RenderPosition.AFTERBEGIN);
+    render(this.#loadingComponent, this.#container, RenderPosition.AFTERBEGIN);
   }
 
   /**
    * Отрисовывает базовые элементы.
    */
   init() {
-    this.#renderSort();
+    this.#renderLoading();
     this.#renderWaypointsList();
-    this.#renderWaypoints(this.#waypointsModel.waypoints);
   }
 
   createNewWaypointFormComponentView(cancelCallback) {
