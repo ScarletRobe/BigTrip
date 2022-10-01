@@ -146,7 +146,7 @@ export default class EditWaypointFormView extends AbstractStatefulView {
    * @returns {object} waypoint - объект с информацией о точке маршрута.
    */
   static parseStateToWaypoint(state) {
-    const waypoint = state;
+    const waypoint = {...state};
 
     waypoint.offers = [...waypoint.updatedOffers];
     waypoint.type = waypoint.updatedType;

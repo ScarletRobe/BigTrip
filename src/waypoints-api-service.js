@@ -3,6 +3,8 @@ import ApiService from './framework/api-service.js';
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
 };
 
 export default class WaypointsApiService extends ApiService {
@@ -25,6 +27,19 @@ export default class WaypointsApiService extends ApiService {
     const response = await this._load({
       url: `points/${waypoint.id}`,
       method: Method.PUT,
+      body: JSON.stringify(this.#adaptToServer(waypoint)),
+      headers: new Headers({'Content-Type': 'application/json'}),
+    });
+
+    const parsedResponse = await ApiService.parseResponse(response);
+
+    return parsedResponse;
+  }
+
+  async addWaypoint(waypoint) {
+    const response = await this._load({
+      url: 'points',
+      method: Method.POST,
       body: JSON.stringify(this.#adaptToServer(waypoint)),
       headers: new Headers({'Content-Type': 'application/json'}),
     });

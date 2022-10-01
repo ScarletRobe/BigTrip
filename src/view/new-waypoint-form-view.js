@@ -11,7 +11,6 @@ import { Russian } from 'flatpickr/dist/l10n/ru.js';
 
 import { humanizeDate, getSelectedDestination, getSelectedOffers, formatDate } from '../utils.js';
 import { TYPES } from '../consts.js';
-import { nanoid } from 'nanoid';
 
 /**
  * Возвращает шаблон элемента создания нового событий.
@@ -24,11 +23,11 @@ const getNewPointFormTemplate = (offers, destinations, state) => {
       <form class="event event--edit" action="#" method="post">
         <header class="event__header">
           <div class="event__type-wrapper">
-            <label class="event__type  event__type-btn" for="event-type-toggle-${state.id}">
+            <label class="event__type  event__type-btn" for="event-type-toggle-1">
               <span class="visually-hidden">Choose event type</span>
               <img class="event__type-icon" width="17" height="17" src="img/icons/${state.type}.png" alt="Event type icon">
             </label>
-            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${state.id}" type="checkbox">
+            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
             <div class="event__type-list">
               <fieldset class="event__type-group">
@@ -116,20 +115,21 @@ export default class NewWaypointFormView extends AbstractStatefulView {
 
   static createEmptyState() {
     const state = {
-      id: nanoid(),
       type: 'flight',
       basePrice: 0,
       destination: 1,
       offers: new Set(),
       dateFrom: formatDate(new Date()),
       dateTo: formatDate(new Date()),
+      isFavorite: false,
     };
 
     return state;
   }
 
   static parseStateToWaypoint(state) {
-    const waypoint = state;
+    const waypoint = {...state};
+    waypoint.offers = [...state.offers];
     return waypoint;
   }
 
