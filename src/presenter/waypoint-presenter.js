@@ -112,6 +112,32 @@ export default class WaypointPresenter {
     remove(prevWaypointComponent);
   }
 
+  setSaving() {
+    this.#waypointEditFormComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setDeleting() {
+    this.#waypointEditFormComponent.updateElement({
+      isDisabled: true,
+      isDeleting: true,
+    });
+  }
+
+  setAborting = () => {
+    const resetFormState = () => {
+      this.#waypointEditFormComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#waypointEditFormComponent.shake(resetFormState);
+  };
+
   // Обработчики
 
   #documentKeydownHandler = (evt) => {

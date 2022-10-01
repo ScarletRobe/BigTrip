@@ -65,7 +65,7 @@ const getNewPointFormTemplate = (offers, destinations, state) => {
             <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${state.basePrice}">
           </div>
 
-          <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+          <button class="event__save-btn  btn  btn--blue" type="submit" ${state.isDisabled ? 'disabled' : ''}>${state.isSaving ? 'Saving...' : 'Save'}</button>
           <button class="event__reset-btn" type="reset">Cancel</button>
         </header>
         <section class="event__details">
@@ -122,6 +122,8 @@ export default class NewWaypointFormView extends AbstractStatefulView {
       dateFrom: formatDate(new Date()),
       dateTo: formatDate(new Date()),
       isFavorite: false,
+      isDisabled: false,
+      isSaving: false,
     };
 
     return state;
@@ -130,6 +132,10 @@ export default class NewWaypointFormView extends AbstractStatefulView {
   static parseStateToWaypoint(state) {
     const waypoint = {...state};
     waypoint.offers = [...state.offers];
+
+    delete waypoint.isDisabled;
+    delete waypoint.isSaving;
+
     return waypoint;
   }
 

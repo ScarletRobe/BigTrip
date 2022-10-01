@@ -68,8 +68,8 @@ const getEditWaypointFormTemplate = (state, destinations, offers) => {
             <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${state.updatedBasePrice}">
           </div>
 
-          <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Delete</button>
+          <button class="event__save-btn  btn  btn--blue" type="submit" ${state.isDisabled ? 'disabled' : ''}>${state.isSaving ? 'Saving...' : 'Save'}</button>
+          <button class="event__reset-btn" type="reset"${state.isDisabled ? 'disabled' : ''}>${state.isDeleting ? 'Deleting...' : 'Delete'}</button>
           <button class="event__rollup-btn" type="button">
             <span class="visually-hidden">Open event</span>
           </button>
@@ -164,6 +164,9 @@ export default class EditWaypointFormView extends AbstractStatefulView {
     delete waypoint.updatedOffers;
     delete waypoint.updatedDateFrom;
     delete waypoint.updatedDateTo;
+    delete waypoint.isDisabled;
+    delete waypoint.isSaving;
+    delete waypoint.isDeleting;
 
     return waypoint;
   }

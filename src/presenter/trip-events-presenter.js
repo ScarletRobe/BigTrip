@@ -22,7 +22,7 @@ export default class TripEventsPresenter {
   #waypointPresentersList = new Map();
   #newWaypointPresenter = null;
 
-  #currentSortType = null;
+  #currentSortType = SORT_OPTIONS.day.name;
   #currentFilter = FilterType.Everything;
   #isLoading = true;
 
@@ -261,16 +261,31 @@ export default class TripEventsPresenter {
    * @param {string} updateType - тип обновления.
    * @param {object} update - измененнная точка маршрута.
    */
-  #viewActionHandler = (actionType, updateType, update) => {
+  #viewActionHandler = async (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.UPDATE_WAYPOINT:
-        this.#waypointsModel.updateWaypoint(updateType, update);
+        this.#waypointPresentersList.get(update.id).setSaving();
+        try {
+          await this.#waypointsModel.updateWaypoint(updateType, update);
+        } catch {
+          this.#waypointPresentersList.get(update.id).setAborting();
+        }
         break;
       case UserAction.ADD_WAYPOINT:
-        this.#waypointsModel.addWaypoint(updateType, update);
+        this.#newWaypointPresenter.setSaving();
+        try {
+          this.#waypointsModel.addWaypoint(updateType, update);
+        } catch {
+          this.#newWaypointPresenter.setAborting();
+        }
         break;
       case UserAction.DELETE_WAYPOINT:
-        this.#waypointsModel.deleteWaypoint(updateType, update);
+        this.#waypointPresentersList.get(update.id).setDeleting();
+        try {
+          this.#waypointsModel.deleteWaypoint(updateType, update);
+        } catch {
+          this.#waypointPresentersList.get(update.id).setAborting();
+        }
         break;
     }
   };
