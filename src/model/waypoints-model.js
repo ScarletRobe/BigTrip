@@ -54,17 +54,23 @@ export default class WaypointsModel extends Observable {
     }
   };
 
-  deleteWaypoint = (updateType, update) => {
+  deleteWaypoint = async (updateType, update) => {
     const index = this.#waypoints.findIndex((task) => task.id === update.id);
 
     if (index === -1) {
       throw new Error('Can\'t delete unexisting waypoint');
     }
 
-    this.#waypoints = [
-      ...this.#waypoints.slice(0, index),
-      ...this.#waypoints.slice(index + 1),
-    ];
+    try {
+      await this.#waypointsApiService.deleteWaypoint(update);
+      this.#waypoints = [
+        ...this.#waypoints.slice(0, index),
+        ...this.#waypoints.slice(index + 1),
+      ];
+      this._notify(updateType);
+    } catch(err) {
+      throw new Error('Can\'t delete waypoint');
+    }
 
     this._notify(updateType);
   };

@@ -49,6 +49,15 @@ export default class WaypointsApiService extends ApiService {
     return parsedResponse;
   }
 
+  async deleteWaypoint(waypoint) {
+    const response = await this._load({
+      url: `points/${waypoint.id}`,
+      method: Method.DELETE,
+    });
+
+    return response;
+  }
+
   #adaptToServer(waypoint) {
     const adaptedWaypoint = {
       ...waypoint,
