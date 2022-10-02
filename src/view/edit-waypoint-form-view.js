@@ -105,6 +105,7 @@ export default class EditWaypointFormView extends AbstractStatefulView {
   #validation = {
     basePrice: true,
     destination: true,
+    date: true,
   };
 
   /**
@@ -352,5 +353,15 @@ export default class EditWaypointFormView extends AbstractStatefulView {
         break;
       default: throw new Error('Incorrect field');
     }
+
+    if (this._state.updatedDateTo.diff(this._state.updatedDateFrom, 'm') < 0) {
+      this.#validation.date = false;
+      this.element.querySelector('.event__field-group--time').style.borderBottom = '1px solid red';
+    } else {
+      this.#validation.date = true;
+      this.element.querySelector('.event__field-group--time').style.borderBottom = '1px solid blue';
+    }
+
+    this.#checkValidationError();
   };
 }

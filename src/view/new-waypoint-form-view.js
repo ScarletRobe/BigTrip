@@ -98,6 +98,7 @@ export default class NewWaypointFormView extends AbstractStatefulView {
   #validation = {
     basePrice: true,
     destination: true,
+    date: true,
   };
 
   constructor(offers, destinations) {
@@ -304,5 +305,15 @@ export default class NewWaypointFormView extends AbstractStatefulView {
         break;
       default: throw new Error('Incorrect field');
     }
+
+    if (this._state.dateTo.diff(this._state.dateFrom, 'm') < 0) {
+      this.#validation.date = false;
+      this.element.querySelector('.event__field-group--time').style.borderBottom = '1px solid red';
+    } else {
+      this.#validation.date = true;
+      this.element.querySelector('.event__field-group--time').style.borderBottom = '1px solid blue';
+    }
+
+    this.#checkValidationError();
   };
 }
