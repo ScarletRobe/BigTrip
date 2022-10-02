@@ -10,6 +10,7 @@ import { Russian } from 'flatpickr/dist/l10n/ru.js';
 import { getDestinationListOptions } from './templates/destination-list-options.js';
 import { getEventTypeItems } from './templates/event-type-items.js';
 import { getEventAvailableOffers } from './templates/event-available-offers.js';
+import { getDestinationEventPhotos } from './templates/destination-event-photos.js';
 
 /**
  * Генерирует форму редактирования события.
@@ -46,7 +47,7 @@ const getEditWaypointFormTemplate = (state, destinations, offers) => {
             <label class="event__label  event__type-output" for="event-destination-1">
               ${state.updatedType}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1" required>
             <datalist id="destination-list-1">
               ${getDestinationListOptions(destinations)}
             </datalist>
@@ -65,7 +66,7 @@ const getEditWaypointFormTemplate = (state, destinations, offers) => {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${state.updatedBasePrice}">
+            <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${state.updatedBasePrice}" min="1" required>
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit" ${state.isDisabled ? 'disabled' : ''}>${state.isSaving ? 'Saving...' : 'Save'}</button>
@@ -88,6 +89,9 @@ const getEditWaypointFormTemplate = (state, destinations, offers) => {
           <section class="event__section  event__section--destination">
             <h3 class="event__section-title  event__section-title--destination">Destination</h3>
             <p class="event__destination-description">${destination.description}</p>
+
+            ${getDestinationEventPhotos(destination)}
+
           </section>
         </section>
       </form>
