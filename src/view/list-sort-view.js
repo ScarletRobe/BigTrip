@@ -5,7 +5,7 @@ import { capitalizeFirstLetter } from '../utils.js';
 const generateTripSortItems = (waypointsAmount, currentSortType) => Object.keys(SORT_OPTIONS).map((option) => {
   const disabled = waypointsAmount && SORT_OPTIONS[option].sort ? '' : 'disabled';
   return `<div class="trip-sort__item  trip-sort__item--${option}">
-  <input id="sort-${option}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${option}" ${disabled} ${option === currentSortType ? 'checked' : ''}>
+  <input id="sort-${option}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${option}" ${disabled} ${waypointsAmount && option === currentSortType ? 'checked' : ''}>
   <label class="trip-sort__btn" for="sort-${option}" data-sort-type="${option}">${capitalizeFirstLetter(option)}</label>
   </div>`;
 }).join('\n');
