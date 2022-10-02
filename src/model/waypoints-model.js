@@ -132,8 +132,11 @@ export default class WaypointsModel extends Observable {
       this.#waypoints = waypoints.map(this.#adaptToClient);
     } catch(err) {
       this.#waypoints = [];
-      this.#destinations = [];
-      this.#offers = [];
+      this.#destinations = null;
+      this.#offers = null;
+
+      this._notify(UpdateType.ERROR);
+      return err;
     }
 
     this._notify(UpdateType.INIT);
