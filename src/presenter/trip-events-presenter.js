@@ -2,6 +2,7 @@ import ListSortView from '../view/list-sort-view.js';
 import WaypointsListView from '../view/waypoints-list-view.js';
 import EmptyListView from '../view/empty-list-view.js';
 import LoadingView from '../view/loading-view.js';
+import ErrorMessageView from '../view/error-message-view';
 
 import WaypointPresenter from './waypoint-presenter.js';
 import NewWaypointPresenter from './new-waypoint-presenter.js';
@@ -20,6 +21,7 @@ export default class TripEventsPresenter {
   #waypointsListComponent = new WaypointsListView();
   #emptyListComponent = null;
   #loadingComponent = new LoadingView();
+  #errorMessageComponent = null;
 
   #container = null;
   #waypointsModel = null;
@@ -27,6 +29,7 @@ export default class TripEventsPresenter {
 
   #waypointPresentersList = new Map();
   #newWaypointPresenter = null;
+  #filterPresenter = null;
 
   #currentSortType = SORT_OPTIONS.day.name;
   #currentFilter = FilterType.Everything;
@@ -37,10 +40,11 @@ export default class TripEventsPresenter {
    * @param {object} container - DOM элемент, в который будут помещены все элементы, созданные в ходе работы.
    * @param {object} waypointsModel - Модель, содержащая всю информацию о точках маршрута.
    */
-  constructor(container, waypointsModel, filterModel) {
+  constructor(container, waypointsModel, filterModel, filterPresenter) {
     this.#container = container;
     this.#waypointsModel = waypointsModel;
     this.#filterModel = filterModel;
+    this.#filterPresenter = filterPresenter;
 
     this.#waypointsModel.addObserver(this.#modelEventHandler);
     this.#filterModel.addObserver(this.#filterModelEventHandler);
@@ -98,7 +102,7 @@ export default class TripEventsPresenter {
   }
 
   #renderSort() {
-    this.#listSortComponent = new ListSortView(this.#waypointsModel.waypoints.length, this.#currentSortType);
+    this.#listSortComponent = new ListSortView(this.waypoints.length, this.#currentSortType);
     render(this.#listSortComponent, this.#container, RenderPosition.AFTERBEGIN);
     this.#listSortComponent.setListener('click', this.#listSortClickHandler);
   }
@@ -111,6 +115,15 @@ export default class TripEventsPresenter {
     remove(this.#loadingComponent);
     this.#emptyListComponent = new EmptyListView(this.#currentFilter);
     render(this.#emptyListComponent, this.#container);
+  }
+
+  #renderLoading() {
+    render(this.#loadingComponent, this.#container, RenderPosition.AFTERBEGIN);
+  }
+
+  #renderErrorMessage() {
+    this.#errorMessageComponent = new ErrorMessageView();
+    render(this.#errorMessageComponent, this.#container, RenderPosition.AFTERBEGIN);
   }
 
   /**
@@ -147,6 +160,10 @@ export default class TripEventsPresenter {
       remove(this.#emptyListComponent);
     }
 
+    if(!this.#isLoading) {
+      remove(this.#loadingComponent);
+    }
+
     remove(this.#listSortComponent);
   }
 
@@ -161,10 +178,6 @@ export default class TripEventsPresenter {
 
     this.#renderSort();
     this.#renderWaypoints(waypoints);
-  }
-
-  #renderLoading() {
-    render(this.#loadingComponent, this.#container, RenderPosition.AFTERBEGIN);
   }
 
   /**
@@ -227,14 +240,10 @@ export default class TripEventsPresenter {
   #filterModelEventHandler = (_, currentFilter) => {
     this.#currentSortType = this.#currentSortType ? SORT_OPTIONS.day.name : null;
 
-    switch (currentFilter) {
-      case FilterType.Future:
-        this.#currentFilter = FilterType.Future;
-        break;
-      case FilterType.Everything:
-        this.#currentFilter = FilterType.Everything;
-        break;
+    if (currentFilter) {
+      this.#currentFilter = currentFilter;
     }
+
     this.#clearBoard();
     this.#renderBoard(this.waypoints);
   };
@@ -255,10 +264,22 @@ export default class TripEventsPresenter {
         break;
       case UpdateType.INIT:
         this.#isLoading = false;
-        remove(this.#loadingComponent);
         this.#clearBoard();
         this.#renderBoard(this.waypoints);
         break;
+      case UpdateType.ERROR:
+        this.#isLoading = false;
+        this.#filterPresenter.disableFilters(FilterType.Everything, FilterType.Future);
+        this.#clearBoard();
+        this.#renderErrorMessage();
+        break;
+    }
+
+    if (this.#filterFutureEvents(this.waypoints).length === 0) {
+      this.#filterPresenter.disableFilters(FilterType.Future);
+    }
+    if (this.waypoints.length === 0) {
+      this.#filterPresenter.disableFilters(FilterType.Everything);
     }
   };
 

@@ -32,6 +32,12 @@ export default class FilterPresenter {
     remove(prevFilterComponent);
   }
 
+  disableFilters(...filters) {
+    filters.forEach((filter) => {
+      this.#filterComponent.disableFilter(filter);
+    });
+  }
+
   #modelEventHandler = () => {
     this.init();
   };
