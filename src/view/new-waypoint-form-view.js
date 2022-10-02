@@ -43,7 +43,7 @@ const getNewPointFormTemplate = (offers, destinations, state) => {
             <label class="event__label  event__type-output" for="event-destination-1">
             ${state.type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination?.name ?? ''}" list="destination-list-1" required>
             <datalist id="destination-list-1">
             ${getDestinationListOptions(destinations)}
             </datalist>
@@ -62,7 +62,7 @@ const getNewPointFormTemplate = (offers, destinations, state) => {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${state.basePrice}">
+            <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${state.basePrice}" min="1" required>
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit" ${state.isDisabled ? 'disabled' : ''}>${state.isSaving ? 'Saving...' : 'Save'}</button>
@@ -81,9 +81,9 @@ const getNewPointFormTemplate = (offers, destinations, state) => {
 
           <section class="event__section  event__section--destination">
             <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-            <p class="event__destination-description">${destination.description}</p>
+            <p class="event__destination-description">${destination?.description ?? ''}</p>
 
-            ${getDestinationEventPhotos(destination)}
+            ${destination ? getDestinationEventPhotos(destination) : ''}
 
           </section>
         </section>
@@ -117,7 +117,7 @@ export default class NewWaypointFormView extends AbstractStatefulView {
     const state = {
       type: 'flight',
       basePrice: 0,
-      destination: 1,
+      destination: null,
       offers: new Set(),
       dateFrom: formatDate(new Date()),
       dateTo: formatDate(new Date()),
@@ -285,7 +285,7 @@ export default class NewWaypointFormView extends AbstractStatefulView {
     if (choosedDestination) {
       this.#validation.destination = true;
       this.updateElement({
-        updatedDestination: choosedDestination.id,
+        destination: choosedDestination.id,
       });
     } else {
       this.element.querySelector('.event__field-group--destination').style.borderBottom = '1px solid red';
