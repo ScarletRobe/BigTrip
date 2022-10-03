@@ -1,13 +1,11 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { humanizeDate, getSelectedDestination, getSelectedOffers, formatDate } from '../utils.js';
-import { TYPES, CITIES } from '../consts.js';
+import { TYPES } from '../consts.js';
 
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/material_blue.css';
 import { Russian } from 'flatpickr/dist/l10n/ru.js';
-
-import he from 'he';
 
 import { getDestinationListOptions } from './templates/destination-list-options.js';
 import { getEventTypeItems } from './templates/event-type-items.js';
@@ -148,7 +146,7 @@ export default class EditWaypointFormView extends AbstractStatefulView {
    * @returns {object} waypoint - объект с информацией о точке маршрута.
    */
   static parseStateToWaypoint(state) {
-    const waypoint = state;
+    const waypoint = {...state};
 
     waypoint.offers = [...waypoint.updatedOffers];
     waypoint.type = waypoint.updatedType;
@@ -224,7 +222,7 @@ export default class EditWaypointFormView extends AbstractStatefulView {
     this.#setDatepickers();
     this.element.querySelector('.event__available-offers').addEventListener('click', this.#availableEventOffersClickHandler);
     this.element.querySelector('.event__type-group').addEventListener('click', this.#eventTypeSelectorClickHandler);
-    this.element.querySelector('.event__input--price').addEventListener('input', this.#eventPriceInputHandler);
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#eventPriceChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('input', this.#eventDestinationInputHandler);
   }
 
@@ -308,7 +306,7 @@ export default class EditWaypointFormView extends AbstractStatefulView {
     }
   };
 
-  #eventPriceInputHandler = (evt) => {
+  #eventPriceChangeHandler = (evt) => {
     this.#checkValidationError();
     if(isNaN(evt.target.valueAsNumber)) {
       this.element.querySelector('.event__field-group--price').style.borderBottom = '1px solid red';
@@ -316,7 +314,7 @@ export default class EditWaypointFormView extends AbstractStatefulView {
     } else {
       this.#validation.basePrice = true;
       this.element.querySelector('.event__field-group--price').style.borderBottom = '1px solid blue';
-      this._state.updatedBasePrice = evt.target.value;
+      this._state.updatedBasePrice = evt.target.valueAsNumber;
     }
     this.#checkValidationError();
   };
@@ -324,10 +322,11 @@ export default class EditWaypointFormView extends AbstractStatefulView {
   #eventDestinationInputHandler = (evt) => {
     evt.preventDefault();
     this.element.querySelector('.event__field-group--destination').style.borderBottom = '1px solid blue';
-    if (CITIES.includes(evt.target.value)) {
+    const choosedDestination = this.destinations.find((destination) => destination.name === evt.target.value);
+    if (choosedDestination) {
       this.#validation.destination = true;
       this.updateElement({
-        updatedDestination: CITIES.findIndex((city) => city === evt.target.value) + 1,
+        updatedDestination: choosedDestination.id,
       });
     } else {
       this.element.querySelector('.event__field-group--destination').style.borderBottom = '1px solid red';

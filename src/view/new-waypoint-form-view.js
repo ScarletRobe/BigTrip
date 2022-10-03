@@ -10,8 +10,7 @@ import 'flatpickr/dist/themes/material_blue.css';
 import { Russian } from 'flatpickr/dist/l10n/ru.js';
 
 import { humanizeDate, getSelectedDestination, getSelectedOffers, formatDate } from '../utils.js';
-import { TYPES, CITIES } from '../consts.js';
-import { nanoid } from 'nanoid';
+import { TYPES } from '../consts.js';
 
 /**
  * Возвращает шаблон элемента создания нового событий.
@@ -24,11 +23,11 @@ const getNewPointFormTemplate = (offers, destinations, state) => {
       <form class="event event--edit" action="#" method="post">
         <header class="event__header">
           <div class="event__type-wrapper">
-            <label class="event__type  event__type-btn" for="event-type-toggle-${state.id}">
+            <label class="event__type  event__type-btn" for="event-type-toggle-1">
               <span class="visually-hidden">Choose event type</span>
               <img class="event__type-icon" width="17" height="17" src="img/icons/${state.type}.png" alt="Event type icon">
             </label>
-            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${state.id}" type="checkbox">
+            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
             <div class="event__type-list">
               <fieldset class="event__type-group">
@@ -116,20 +115,21 @@ export default class NewWaypointFormView extends AbstractStatefulView {
 
   static createEmptyState() {
     const state = {
-      id: nanoid(),
       type: 'flight',
       basePrice: 0,
       destination: 1,
       offers: new Set(),
       dateFrom: formatDate(new Date()),
       dateTo: formatDate(new Date()),
+      isFavorite: false,
     };
 
     return state;
   }
 
   static parseStateToWaypoint(state) {
-    const waypoint = state;
+    const waypoint = {...state};
+    waypoint.offers = [...state.offers];
     return waypoint;
   }
 
@@ -175,7 +175,7 @@ export default class NewWaypointFormView extends AbstractStatefulView {
     this.#setDatepickers();
     this.element.querySelector('.event__available-offers').addEventListener('click', this.#availableEventOffersClickHandler);
     this.element.querySelector('.event__type-group').addEventListener('click', this.#eventTypeSelectorClickHandler);
-    this.element.querySelector('.event__input--price').addEventListener('input', this.#eventPriceInputHandler);
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#eventPriceChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('input', this.#eventDestinationInputHandler);
   }
 
@@ -259,7 +259,7 @@ export default class NewWaypointFormView extends AbstractStatefulView {
     }
   };
 
-  #eventPriceInputHandler = (evt) => {
+  #eventPriceChangeHandler = (evt) => {
     this.#checkValidationError();
     if(isNaN(evt.target.valueAsNumber)) {
       this.element.querySelector('.event__field-group--price').style.borderBottom = '1px solid red';
@@ -267,7 +267,7 @@ export default class NewWaypointFormView extends AbstractStatefulView {
     } else {
       this.#validation.basePrice = true;
       this.element.querySelector('.event__field-group--price').style.borderBottom = '1px solid blue';
-      this._state.updatedBasePrice = evt.target.value;
+      this._state.basePrice = evt.target.valueAsNumber;
     }
     this.#checkValidationError();
   };
@@ -275,10 +275,11 @@ export default class NewWaypointFormView extends AbstractStatefulView {
   #eventDestinationInputHandler = (evt) => {
     evt.preventDefault();
     this.element.querySelector('.event__field-group--destination').style.borderBottom = '1px solid blue';
-    if (CITIES.includes(evt.target.value)) {
+    const choosedDestination = this.destinations.find((destination) => destination.name === evt.target.value);
+    if (choosedDestination) {
       this.#validation.destination = true;
       this.updateElement({
-        updatedDestination: CITIES.findIndex((city) => city === evt.target.value) + 1,
+        updatedDestination: choosedDestination.id,
       });
     } else {
       this.element.querySelector('.event__field-group--destination').style.borderBottom = '1px solid red';

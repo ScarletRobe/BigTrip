@@ -23,7 +23,7 @@ export default class FilterPresenter {
     this.#filterComponent = new ListFilterView(this.#filterModel.currentFilter);
     this.#filterComponent.setListener('changeFilter', this.#filterTypeChangeHandler);
 
-    if (prevFilterComponent === null) {
+    if (!prevFilterComponent) {
       render(this.#filterComponent, this.#container);
       return;
     }
@@ -36,6 +36,10 @@ export default class FilterPresenter {
     this.init();
   };
 
+  /**
+   * Обрабатывает смену типа фильтра
+   * @param {string} filterType - тип выбранного фильтра
+   */
   #filterTypeChangeHandler = (filterType) => {
     if (this.#filterModel.filter === filterType) {
       return;

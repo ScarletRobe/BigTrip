@@ -8,6 +8,11 @@ export default class FilterModel extends Observable {
     return this.#currentFilter;
   }
 
+  /**
+   * Устанавливает текущий фильтр.
+   * @param {string} updateType - тип обновления.
+   * @param {string} filter - выбранный фильтр.
+   */
   setFilter = (updateType, filter) => {
     this.#currentFilter = filter;
     this._notify(updateType, filter);
