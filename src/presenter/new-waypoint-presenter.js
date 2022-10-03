@@ -83,7 +83,6 @@ export default class NewWaypointPresenter {
       UpdateType.MINOR,
       waypoint,
     );
-    // this.destroy();
   };
 
   #newWaypointFormCancelHandler = () =>{
