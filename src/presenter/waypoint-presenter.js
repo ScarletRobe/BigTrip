@@ -33,43 +33,6 @@ export default class WaypointPresenter {
     this.#waypointUpdateHandler = waypointUpdateHandler;
   }
 
-  #replaceWaypointToEditForm() {
-    replace(this.#waypointEditFormComponent, this.#waypointComponent);
-  }
-
-  #replaceEditFormToWaypoint() {
-    replace(this.#waypointComponent, this.#waypointEditFormComponent);
-    this.#waypointEditFormComponent.removeListeners();
-    remove(this.#waypointEditFormComponent);
-    this.#waypointEditFormComponent = null;
-    document.removeEventListener('keydown', this.#documentKeydownHandler);
-  }
-
-  #renderWaypointEditForm() {
-    this.#waypointEditFormComponent = new EditWaypointFormView(this.#waypoint, this.#selectedDestination, this.#waypointsModel.destinations, this.#waypointsModel.offers);
-
-    this.#waypointEditFormComponent.setListener('submit', this.#waypointEditFormSubmitHandler);
-    this.#waypointEditFormComponent.setListener('clickOnRollupBtn', this.#waypointEditFormRollupBtnClickHandler);
-    this.#waypointEditFormComponent.setListener('delete', this.#waypointEditFormDeleteHandler);
-
-    document.addEventListener('keydown', this.#documentKeydownHandler);
-
-    this.#replaceWaypointToEditForm();
-  }
-
-  /**
-   *
-   * @param {object} waypoint - объект с информацией о точке маршрута.
-   * @param {object} selectedDestination - объект с информацией о выбранном месте назначения.
-   * @param {array} selectedOffers - массив выбранных дополнительных предложений.
-   */
-  #renderWaypointItem(waypoint, selectedDestination, selectedOffers) {
-    this.#waypointComponent = new WaypointItemView(waypoint, selectedDestination, selectedOffers);
-    this.#waypointComponent.setListener('clickOnRollupBtn', this.#waypointRollupBtnClickHandler);
-
-    render(this.#waypointComponent, this.#container);
-  }
-
   destroyWaypoint() {
     remove(this.#waypointComponent);
     remove(this.#waypointEditFormComponent);
@@ -110,6 +73,69 @@ export default class WaypointPresenter {
 
     replace(this.#waypointComponent, prevWaypointComponent);
     remove(prevWaypointComponent);
+  }
+
+  setSaving() {
+    this.#waypointEditFormComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setDeleting() {
+    this.#waypointEditFormComponent.updateElement({
+      isDisabled: true,
+      isDeleting: true,
+    });
+  }
+
+  setAborting = () => {
+    const resetFormState = () => {
+      this.#waypointEditFormComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#waypointEditFormComponent.shake(resetFormState);
+  };
+
+  #replaceWaypointToEditForm() {
+    replace(this.#waypointEditFormComponent, this.#waypointComponent);
+  }
+
+  #replaceEditFormToWaypoint() {
+    replace(this.#waypointComponent, this.#waypointEditFormComponent);
+    this.#waypointEditFormComponent.removeListeners();
+    remove(this.#waypointEditFormComponent);
+    this.#waypointEditFormComponent = null;
+    document.removeEventListener('keydown', this.#documentKeydownHandler);
+  }
+
+  #renderWaypointEditForm() {
+    this.#waypointEditFormComponent = new EditWaypointFormView(this.#waypoint, this.#selectedDestination, this.#waypointsModel.destinations, this.#waypointsModel.offers);
+
+    this.#waypointEditFormComponent.setListener('submit', this.#waypointEditFormSubmitHandler);
+    this.#waypointEditFormComponent.setListener('clickOnRollupBtn', this.#waypointEditFormRollupBtnClickHandler);
+    this.#waypointEditFormComponent.setListener('delete', this.#waypointEditFormDeleteHandler);
+
+    document.addEventListener('keydown', this.#documentKeydownHandler);
+
+    this.#replaceWaypointToEditForm();
+  }
+
+  /**
+   *
+   * @param {object} waypoint - объект с информацией о точке маршрута.
+   * @param {object} selectedDestination - объект с информацией о выбранном месте назначения.
+   * @param {array} selectedOffers - массив выбранных дополнительных предложений.
+   */
+  #renderWaypointItem(waypoint, selectedDestination, selectedOffers) {
+    this.#waypointComponent = new WaypointItemView(waypoint, selectedDestination, selectedOffers);
+    this.#waypointComponent.setListener('clickOnRollupBtn', this.#waypointRollupBtnClickHandler);
+
+    render(this.#waypointComponent, this.#container);
   }
 
   // Обработчики

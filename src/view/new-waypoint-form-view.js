@@ -43,7 +43,7 @@ const getNewPointFormTemplate = (offers, destinations, state) => {
             <label class="event__label  event__type-output" for="event-destination-1">
             ${state.type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination?.name ?? ''}" list="destination-list-1" required>
             <datalist id="destination-list-1">
             ${getDestinationListOptions(destinations)}
             </datalist>
@@ -62,10 +62,10 @@ const getNewPointFormTemplate = (offers, destinations, state) => {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${state.basePrice}">
+            <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${state.basePrice}" min="1" required>
           </div>
 
-          <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+          <button class="event__save-btn  btn  btn--blue" type="submit" ${state.isDisabled ? 'disabled' : ''}>${state.isSaving ? 'Saving...' : 'Save'}</button>
           <button class="event__reset-btn" type="reset">Cancel</button>
         </header>
         <section class="event__details">
@@ -81,9 +81,9 @@ const getNewPointFormTemplate = (offers, destinations, state) => {
 
           <section class="event__section  event__section--destination">
             <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-            <p class="event__destination-description">${destination.description}</p>
+            <p class="event__destination-description">${destination?.description ?? ''}</p>
 
-            ${getDestinationEventPhotos(destination)}
+            ${destination ? getDestinationEventPhotos(destination) : ''}
 
           </section>
         </section>
@@ -98,6 +98,7 @@ export default class NewWaypointFormView extends AbstractStatefulView {
   #validation = {
     basePrice: true,
     destination: true,
+    date: true,
   };
 
   constructor(offers, destinations) {
@@ -113,24 +114,15 @@ export default class NewWaypointFormView extends AbstractStatefulView {
     return getNewPointFormTemplate(this.offers, this.destinations, this._state);
   }
 
-  static createEmptyState() {
-    const state = {
-      type: 'flight',
-      basePrice: 0,
-      destination: 1,
-      offers: new Set(),
-      dateFrom: formatDate(new Date()),
-      dateTo: formatDate(new Date()),
-      isFavorite: false,
-    };
+  removeElement() {
+    super.removeElement();
 
-    return state;
-  }
-
-  static parseStateToWaypoint(state) {
-    const waypoint = {...state};
-    waypoint.offers = [...state.offers];
-    return waypoint;
+    if (this.#dateFromPicker && this.#dateToPicker) {
+      this.#dateFromPicker.destroy();
+      this.#dateToPicker.destroy();
+      this.#dateFromPicker = null;
+      this.#dateToPicker = null;
+    }
   }
 
   setListener (type, callback) {
@@ -185,17 +177,6 @@ export default class NewWaypointFormView extends AbstractStatefulView {
       this.setListener(handler, this._handlers[handler].outerCallback ?? this._handlers[handler].cb);
     }
   };
-
-  removeElement() {
-    super.removeElement();
-
-    if (this.#dateFromPicker && this.#dateToPicker) {
-      this.#dateFromPicker.destroy();
-      this.#dateToPicker.destroy();
-      this.#dateFromPicker = null;
-      this.#dateToPicker = null;
-    }
-  }
 
   #setDatepickers() {
     const DATEPICKER_CONFIG = {
@@ -279,7 +260,7 @@ export default class NewWaypointFormView extends AbstractStatefulView {
     if (choosedDestination) {
       this.#validation.destination = true;
       this.updateElement({
-        updatedDestination: choosedDestination.id,
+        destination: choosedDestination.id,
       });
     } else {
       this.element.querySelector('.event__field-group--destination').style.borderBottom = '1px solid red';
@@ -298,5 +279,41 @@ export default class NewWaypointFormView extends AbstractStatefulView {
         break;
       default: throw new Error('Incorrect field');
     }
+
+    if (this._state.dateTo.diff(this._state.dateFrom, 'm') < 0) {
+      this.#validation.date = false;
+      this.element.querySelector('.event__field-group--time').style.borderBottom = '1px solid red';
+    } else {
+      this.#validation.date = true;
+      this.element.querySelector('.event__field-group--time').style.borderBottom = '1px solid blue';
+    }
+
+    this.#checkValidationError();
   };
+
+  static createEmptyState() {
+    const state = {
+      type: 'flight',
+      basePrice: 0,
+      destination: null,
+      offers: new Set(),
+      dateFrom: formatDate(new Date()),
+      dateTo: formatDate(new Date()),
+      isFavorite: false,
+      isDisabled: false,
+      isSaving: false,
+    };
+
+    return state;
+  }
+
+  static parseStateToWaypoint(state) {
+    const waypoint = {...state};
+    waypoint.offers = [...state.offers];
+
+    delete waypoint.isDisabled;
+    delete waypoint.isSaving;
+
+    return waypoint;
+  }
 }

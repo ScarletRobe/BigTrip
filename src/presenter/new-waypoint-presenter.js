@@ -53,6 +53,26 @@ export default class NewWaypointPresenter {
     document.removeEventListener('keydown', this.#documentKeydownHandler);
   }
 
+  setSaving = () => {
+    this.#newWaypointFormComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  };
+
+  setAborting() {
+    const resetFormState = () => {
+      this.#newWaypointFormComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+      });
+    };
+
+    this.#newWaypointFormComponent.shake(resetFormState);
+  }
+
+  // Обработчики
+
   /**
    * Обрабатывает отправку формы создания новой точки маршрута.
    * @param {object} waypoint - точка маршрута.
@@ -63,7 +83,6 @@ export default class NewWaypointPresenter {
       UpdateType.MINOR,
       waypoint,
     );
-    this.destroy();
   };
 
   #newWaypointFormCancelHandler = () =>{

@@ -102,6 +102,24 @@ export default class WaypointsModel extends Observable {
     this._notify(updateType);
   }
 
+  async init() {
+    try {
+      const waypoints = await this.#waypointsApiService.getWaypoints();
+      this.#destinations = await this.#waypointsApiService.getDestinations();
+      this.#offers = await this.#waypointsApiService.getOffers();
+      this.#waypoints = waypoints.map(this.#adaptToClient);
+    } catch(err) {
+      this.#waypoints = [];
+      this.#destinations = null;
+      this.#offers = null;
+
+      this._notify(UpdateType.ERROR);
+      return err;
+    }
+
+    this._notify(UpdateType.INIT);
+  }
+
   /**
    * Адаптирует объект точки маршрута для хранения на стороне клиента.
    * @param {object} waypoint - объект с информацией о точке маршрута.
@@ -122,20 +140,5 @@ export default class WaypointsModel extends Observable {
     delete adaptedWaypoint.is_favorite;
 
     return adaptedWaypoint;
-  }
-
-  async init() {
-    try {
-      const waypoints = await this.#waypointsApiService.getWaypoints();
-      this.#destinations = await this.#waypointsApiService.getDestinations();
-      this.#offers = await this.#waypointsApiService.getOffers();
-      this.#waypoints = waypoints.map(this.#adaptToClient);
-    } catch(err) {
-      this.#waypoints = [];
-      this.#destinations = [];
-      this.#offers = [];
-    }
-
-    this._notify(UpdateType.INIT);
   }
 }

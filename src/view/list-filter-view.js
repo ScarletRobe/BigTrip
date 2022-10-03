@@ -57,9 +57,13 @@ export default class ListFilterView extends AbstractView {
     this.element.querySelector(this._handlers[type].element).addEventListener(this._handlers[type].type, this._handlers[type].cb);
   }
 
+  disableFilter(filterName) {
+    this.element.querySelector(`#filter-${filterName}`).disabled = true;
+  }
+
   #filterTypeChangeHandler = (callback) => (
     (evt) => {
-      if(evt.target.matches('.trip-filters__filter-label')) {
+      if(evt.target.matches('.trip-filters__filter-label') && evt.target.disabled === false) {
         evt.preventDefault();
         callback(evt.target.control.value);
       }
