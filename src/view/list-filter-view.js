@@ -63,9 +63,9 @@ export default class ListFilterView extends AbstractView {
 
   #filterTypeChangeHandler = (callback) => (
     (evt) => {
-      if(evt.target.matches('.trip-filters__filter-label') && evt.target.disabled === false) {
+      if(evt.target.matches('.trip-filters__filter-input') && evt.target.disabled === false) {
         evt.preventDefault();
-        callback(evt.target.control.value);
+        callback(evt.target.value);
       }
     }
   );

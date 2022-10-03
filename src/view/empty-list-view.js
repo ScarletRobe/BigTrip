@@ -10,7 +10,7 @@ const getEmptyListTemplate = (currentFilter) => (
   `<section class="trip-events">
     <h2 class="visually-hidden">Trip events</h2>
 
-    <p class="trip-events__msg">${currentFilter === FilterType.Everything ? 'Click New Event to create your first point' : 'There are no future events now'}</p>
+    <p class="trip-events__msg">${currentFilter === FilterType.EVERYTHING ? 'Click New Event to create your first point' : 'There are no future events now'}</p>
 
     <!--
       Значение отображаемого текста зависит от выбранного фильтра:

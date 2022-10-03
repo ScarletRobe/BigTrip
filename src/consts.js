@@ -1,4 +1,4 @@
-const TYPES = {
+const Types = {
   taxi: {
     id: 1,
   },
@@ -28,7 +28,7 @@ const TYPES = {
   },
 };
 
-const SORT_OPTIONS = {
+const SortOptions = {
   day: {
     sort: true,
     name: 'day',
@@ -66,13 +66,13 @@ const UpdateType = {
 };
 
 const FilterType = {
-  Everything: 'everything',
-  Future: 'future',
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
 };
 
 export {
-  TYPES,
-  SORT_OPTIONS,
+  Types,
+  SortOptions,
   UserAction,
   UpdateType,
   FilterType,

@@ -1,9 +1,9 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { SORT_OPTIONS } from '../consts.js';
+import { SortOptions } from '../consts.js';
 import { capitalizeFirstLetter } from '../utils.js';
 
-const generateTripSortItems = (waypointsAmount, currentSortType) => Object.keys(SORT_OPTIONS).map((option) => {
-  const disabled = waypointsAmount && SORT_OPTIONS[option].sort ? '' : 'disabled';
+const generateTripSortItems = (waypointsAmount, currentSortType) => Object.keys(SortOptions).map((option) => {
+  const disabled = waypointsAmount && SortOptions[option].sort ? '' : 'disabled';
   return `<div class="trip-sort__item  trip-sort__item--${option}">
   <input id="sort-${option}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${option}" ${disabled} ${waypointsAmount && option === currentSortType ? 'checked' : ''}>
   <label class="trip-sort__btn" for="sort-${option}" data-sort-type="${option}">${capitalizeFirstLetter(option)}</label>
@@ -59,10 +59,10 @@ export default class ListSortView extends AbstractView {
 
   #setSortClickHandler(callback) {
     return (evt) => {
-      if (evt.target.tagName === 'LABEL' && SORT_OPTIONS[evt.target.dataset.sortType].sort && !evt.target.control.checked && !evt.target.control.disabled) {
+      if (evt.target.tagName === 'LABEL' && SortOptions[evt.target.dataset.sortType].sort && !evt.target.control.checked && !evt.target.control.disabled) {
         evt.preventDefault();
-        callback(evt.target.dataset.sortType);
         evt.target.control.checked = true;
+        callback(evt.target.dataset.sortType);
       }
     };
   }

@@ -9,7 +9,7 @@ import NewWaypointPresenter from './new-waypoint-presenter.js';
 
 import { RenderPosition, render, remove } from '../framework/render.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
-import { SORT_OPTIONS, UpdateType, UserAction, FilterType } from '../consts.js';
+import { SortOptions, UpdateType, UserAction, FilterType } from '../consts.js';
 
 const TimeLimit = {
   LOWER_LIMIT: 350,
@@ -31,8 +31,8 @@ export default class TripEventsPresenter {
   #newWaypointPresenter = null;
   #filterPresenter = null;
 
-  #currentSortType = SORT_OPTIONS.day.name;
-  #currentFilter = FilterType.Everything;
+  #currentSortType = SortOptions.day.name;
+  #currentFilter = FilterType.EVERYTHING;
   #isLoading = true;
   #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
 
@@ -54,16 +54,16 @@ export default class TripEventsPresenter {
     let result = this.#waypointsModel.waypoints;
 
     switch (this.#currentFilter) {
-      case FilterType.Future:
+      case FilterType.FUTURE:
         result = this.#filterFutureEvents(result);
         break;
     }
 
     switch (this.#currentSortType) {
-      case SORT_OPTIONS.day.name:
+      case SortOptions.day.name:
         result = this.#sortByDay(result);
         break;
-      case SORT_OPTIONS.price.name:
+      case SortOptions.price.name:
         result = this.#sortByPrice(result);
         break;
     }
@@ -88,7 +88,7 @@ export default class TripEventsPresenter {
       presenter.resetView();
     });
 
-    this.#filterModel.setFilter(UpdateType.MINOR, FilterType.Everything);
+    this.#filterModel.setFilter(UpdateType.MINOR, FilterType.EVERYTHING);
 
     this.#newWaypointPresenter = new NewWaypointPresenter(this.#waypointsListComponent.element, this.#viewActionHandler, this.#waypointsModel.offers, this.#waypointsModel.destinations);
     this.#newWaypointPresenter.init(cancelCallback);
@@ -212,10 +212,10 @@ export default class TripEventsPresenter {
   #listSortClickHandler = (type) => {
     switch(type) {
       case 'day':
-        this.#currentSortType = SORT_OPTIONS.day.name;
+        this.#currentSortType = SortOptions.day.name;
         break;
       case 'price':
-        this.#currentSortType = SORT_OPTIONS.price.name;
+        this.#currentSortType = SortOptions.price.name;
         break;
     }
     this.#clearBoard();
@@ -237,7 +237,7 @@ export default class TripEventsPresenter {
    * @param {object} currentFilter - текущий фильтр.
    */
   #filterModelEventHandler = (_, currentFilter) => {
-    this.#currentSortType = this.#currentSortType ? SORT_OPTIONS.day.name : null;
+    this.#currentSortType = this.#currentSortType ? SortOptions.day.name : null;
 
     if (currentFilter) {
       this.#currentFilter = currentFilter;
@@ -268,17 +268,17 @@ export default class TripEventsPresenter {
         break;
       case UpdateType.ERROR:
         this.#isLoading = false;
-        this.#filterPresenter.disableFilters(FilterType.Everything, FilterType.Future);
+        this.#filterPresenter.disableFilters(FilterType.EVERYTHING, FilterType.FUTURE);
         this.#clearBoard();
         this.#renderErrorMessage();
         break;
     }
 
-    if (this.#filterFutureEvents(this.waypoints).length === 0) {
-      this.#filterPresenter.disableFilters(FilterType.Future);
+    if (!this.#filterFutureEvents(this.waypoints).length) {
+      this.#filterPresenter.disableFilters(FilterType.FUTURE);
     }
-    if (this.waypoints.length === 0) {
-      this.#filterPresenter.disableFilters(FilterType.Everything);
+    if (!this.waypoints.length) {
+      this.#filterPresenter.disableFilters(FilterType.EVERYTHING);
     }
   };
 

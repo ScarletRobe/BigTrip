@@ -1,6 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { humanizeDate, getSelectedDestination, getSelectedOffers, formatDate } from '../utils.js';
-import { TYPES } from '../consts.js';
+import { Types } from '../consts.js';
 
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
@@ -108,6 +108,11 @@ export default class EditWaypointFormView extends AbstractStatefulView {
     date: true,
   };
 
+  #Pickers = {
+    DATE_FROM: 'dateFrom',
+    DATE_TO: 'dateTo',
+  };
+
   /**
    * @param {object} waypoint - объект с информацией о точке маршрута.
    * @param {object} selectedDestination - объект с информацией о выбранной месте назначения.
@@ -204,7 +209,7 @@ export default class EditWaypointFormView extends AbstractStatefulView {
     }
   };
 
-  #setDatepickers() {
+  #setDatepickers(input) {
     const DATEPICKER_CONFIG = {
       dateFormat: 'd/m/y H:i',
       allowInput: true,
@@ -213,22 +218,54 @@ export default class EditWaypointFormView extends AbstractStatefulView {
       locale: Russian,
     };
 
-    this.#dateFromPicker = flatpickr(
-      this.element.querySelector('#event-start-time-1'),
-      {
-        ...DATEPICKER_CONFIG,
-        defaultDate: humanizeDate(this._state.dateFrom, 'D/MM/YY HH:mm'),
-        onChange: (date) => this.#eventDateChangeHandler(date, 'dateFrom'),
-      }
-    );
-    this.#dateToPicker = flatpickr(
-      this.element.querySelector('#event-end-time-1'),
-      {
-        ...DATEPICKER_CONFIG,
-        defaultDate: humanizeDate(this._state.dateTo, 'D/MM/YY HH:mm'),
-        onChange: (date) => this.#eventDateChangeHandler(date, 'dateTo'),
-      }
-    );
+    switch (input) {
+      case this.#Pickers.DATE_FROM:
+        if (this.#dateFromPicker) {
+          this.#dateFromPicker.destroy();
+        }
+        this.#dateFromPicker = flatpickr(
+          this.element.querySelector('#event-start-time-1'),
+          {
+            ...DATEPICKER_CONFIG,
+            defaultDate: humanizeDate(this._state.updatedDateFrom, 'D/MM/YY HH:mm'),
+            maxDate: humanizeDate(this._state.updatedDateTo, 'DD/MM/YY HH:mm'),
+            onChange: (date) => this.#eventDateChangeHandler(date, 'dateFrom'),
+          }
+        );
+        break;
+      case this.#Pickers.DATE_TO:
+        if (this.#dateToPicker) {
+          this.#dateToPicker.destroy();
+        }
+        this.#dateToPicker = flatpickr(
+          this.element.querySelector('#event-end-time-1'),
+          {
+            ...DATEPICKER_CONFIG,
+            defaultDate: humanizeDate(this._state.updatedDateTo, 'D/MM/YY HH:mm'),
+            minDate: humanizeDate(this._state.updatedDateFrom, 'DD/MM/YY HH:mm'),
+            onChange: (date) => this.#eventDateChangeHandler(date, 'dateTo'),
+          }
+        );
+        break;
+      default:
+        this.#dateFromPicker = flatpickr(
+          this.element.querySelector('#event-start-time-1'),
+          {
+            ...DATEPICKER_CONFIG,
+            defaultDate: humanizeDate(this._state.dateFrom, 'D/MM/YY HH:mm'),
+            onChange: (date) => this.#eventDateChangeHandler(date, 'dateFrom'),
+          }
+        );
+        this.#dateToPicker = flatpickr(
+          this.element.querySelector('#event-end-time-1'),
+          {
+            ...DATEPICKER_CONFIG,
+            defaultDate: humanizeDate(this._state.dateTo, 'D/MM/YY HH:mm'),
+            minDate: humanizeDate(this._state.updatedDateFrom, 'DD/MM/YY HH:mm'),
+            onChange: (date) => this.#eventDateChangeHandler(date, 'dateTo'),
+          }
+        );
+    }
   }
 
   #checkValidationError() {
@@ -261,7 +298,7 @@ export default class EditWaypointFormView extends AbstractStatefulView {
       const htmlFor = evt.target.htmlFor;
       this._state.updatedOffers.clear();
       this.updateElement({
-        updatedType: Object.keys(TYPES).find((type) => TYPES[type].id === Number(htmlFor[htmlFor.length - 1])),
+        updatedType: Object.keys(Types).find((type) => Types[type].id === Number(htmlFor[htmlFor.length - 1])),
       });
     }
   };
@@ -299,9 +336,11 @@ export default class EditWaypointFormView extends AbstractStatefulView {
     switch(field) {
       case 'dateFrom':
         this._state.updatedDateFrom = formatDate(date);
+        this.#setDatepickers(this.#Pickers.DATE_TO);
         break;
       case 'dateTo':
         this._state.updatedDateTo = formatDate(date);
+        this.#setDatepickers(this.#Pickers.DATE_FROM);
         break;
       default: throw new Error('Incorrect field');
     }

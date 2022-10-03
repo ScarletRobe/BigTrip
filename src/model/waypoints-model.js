@@ -104,10 +104,15 @@ export default class WaypointsModel extends Observable {
 
   async init() {
     try {
-      const waypoints = await this.#waypointsApiService.getWaypoints();
-      this.#destinations = await this.#waypointsApiService.getDestinations();
-      this.#offers = await this.#waypointsApiService.getOffers();
+      const [waypoints, destinations, offers] = await Promise.all([
+        this.#waypointsApiService.getWaypoints(),
+        this.#waypointsApiService.getDestinations(),
+        this.#waypointsApiService.getOffers()
+      ]);
+
       this.#waypoints = waypoints.map(this.#adaptToClient);
+      this.#destinations = destinations;
+      this.#offers = offers;
     } catch(err) {
       this.#waypoints = [];
       this.#destinations = null;

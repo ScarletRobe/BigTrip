@@ -2,7 +2,7 @@ import Observable from '../framework/observable.js';
 import { FilterType } from '../consts.js';
 
 export default class FilterModel extends Observable {
-  #currentFilter = FilterType.Everything;
+  #currentFilter = FilterType.EVERYTHING;
 
   get currentFilter() {
     return this.#currentFilter;

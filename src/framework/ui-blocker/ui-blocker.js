@@ -65,10 +65,12 @@ export default class UiBlocker {
   /** Метод, добавляющий CSS-класс элементу */
   #addClass = () => {
     this.#element.classList.add('ui-blocker--on');
+    document.body.style.overflow = 'hidden';
   };
 
   /** Метод, убирающий CSS-класс с элемента */
   #removeClass = () => {
     this.#element.classList.remove('ui-blocker--on');
+    document.body.style.overflow = 'inherit';
   };
 }
