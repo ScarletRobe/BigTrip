@@ -61,8 +61,8 @@ export default class ListSortView extends AbstractView {
     return (evt) => {
       if (evt.target.tagName === 'LABEL' && SortOptions[evt.target.dataset.sortType].sort && !evt.target.control.checked && !evt.target.control.disabled) {
         evt.preventDefault();
-        callback(evt.target.dataset.sortType);
         evt.target.control.checked = true;
+        callback(evt.target.dataset.sortType);
       }
     };
   }
