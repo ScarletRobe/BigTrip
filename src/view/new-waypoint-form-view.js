@@ -114,30 +114,15 @@ export default class NewWaypointFormView extends AbstractStatefulView {
     return getNewPointFormTemplate(this.offers, this.destinations, this._state);
   }
 
-  static createEmptyState() {
-    const state = {
-      type: 'flight',
-      basePrice: 0,
-      destination: null,
-      offers: new Set(),
-      dateFrom: formatDate(new Date()),
-      dateTo: formatDate(new Date()),
-      isFavorite: false,
-      isDisabled: false,
-      isSaving: false,
-    };
+  removeElement() {
+    super.removeElement();
 
-    return state;
-  }
-
-  static parseStateToWaypoint(state) {
-    const waypoint = {...state};
-    waypoint.offers = [...state.offers];
-
-    delete waypoint.isDisabled;
-    delete waypoint.isSaving;
-
-    return waypoint;
+    if (this.#dateFromPicker && this.#dateToPicker) {
+      this.#dateFromPicker.destroy();
+      this.#dateToPicker.destroy();
+      this.#dateFromPicker = null;
+      this.#dateToPicker = null;
+    }
   }
 
   setListener (type, callback) {
@@ -192,17 +177,6 @@ export default class NewWaypointFormView extends AbstractStatefulView {
       this.setListener(handler, this._handlers[handler].outerCallback ?? this._handlers[handler].cb);
     }
   };
-
-  removeElement() {
-    super.removeElement();
-
-    if (this.#dateFromPicker && this.#dateToPicker) {
-      this.#dateFromPicker.destroy();
-      this.#dateToPicker.destroy();
-      this.#dateFromPicker = null;
-      this.#dateToPicker = null;
-    }
-  }
 
   #setDatepickers() {
     const DATEPICKER_CONFIG = {
@@ -316,4 +290,30 @@ export default class NewWaypointFormView extends AbstractStatefulView {
 
     this.#checkValidationError();
   };
+
+  static createEmptyState() {
+    const state = {
+      type: 'flight',
+      basePrice: 0,
+      destination: null,
+      offers: new Set(),
+      dateFrom: formatDate(new Date()),
+      dateTo: formatDate(new Date()),
+      isFavorite: false,
+      isDisabled: false,
+      isSaving: false,
+    };
+
+    return state;
+  }
+
+  static parseStateToWaypoint(state) {
+    const waypoint = {...state};
+    waypoint.offers = [...state.offers];
+
+    delete waypoint.isDisabled;
+    delete waypoint.isSaving;
+
+    return waypoint;
+  }
 }

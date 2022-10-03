@@ -38,6 +38,8 @@ export default class FilterPresenter {
     });
   }
 
+  // Обработчики
+
   #modelEventHandler = () => {
     this.init();
   };

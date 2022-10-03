@@ -72,6 +72,29 @@ export default class TripEventsPresenter {
   }
 
   /**
+   * Отрисовывает базовые элементы.
+   */
+  init() {
+    this.#renderLoading();
+    this.#renderWaypointsList();
+  }
+
+  /**
+   * Создает форму создания новой точки маршрута.
+   * @param {function} cancelCallback - колбэк, который будет вызван при закрытии формы.
+   */
+  createNewWaypointFormComponentView(cancelCallback) {
+    this.#waypointPresentersList.forEach((presenter) => {
+      presenter.resetView();
+    });
+
+    this.#filterModel.setFilter(UpdateType.MINOR, FilterType.Everything);
+
+    this.#newWaypointPresenter = new NewWaypointPresenter(this.#waypointsListComponent.element, this.#viewActionHandler, this.#waypointsModel.offers, this.#waypointsModel.destinations);
+    this.#newWaypointPresenter.init(cancelCallback);
+  }
+
+  /**
    * Сортирует точки маршрута по дате.
    * @param {array} waypoints - массив точек маршрута.
    * @returns отсортированные точки маршрута.
@@ -178,30 +201,6 @@ export default class TripEventsPresenter {
 
     this.#renderSort();
     this.#renderWaypoints(waypoints);
-  }
-
-  /**
-   * Отрисовывает базовые элементы.
-   */
-  init() {
-    this.#renderLoading();
-    this.#renderWaypointsList();
-  }
-
-  /**
-   * Создает форму создания новой точки маршрута.
-   * @param {function} cancelCallback - колбэк, который будет вызван при закрытии формы.
-   */
-  createNewWaypointFormComponentView(cancelCallback) {
-    this.#waypointPresentersList.forEach((presenter) => {
-      presenter.resetView();
-    });
-
-    this.#filterModel.setFilter(UpdateType.MINOR, FilterType.Everything);
-
-    this.#newWaypointPresenter = new NewWaypointPresenter(this.#waypointsListComponent.element, this.#viewActionHandler, this.#waypointsModel.offers, this.#waypointsModel.destinations);
-    this.#newWaypointPresenter.init(cancelCallback);
-
   }
 
   // Обработчики

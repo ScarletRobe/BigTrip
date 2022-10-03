@@ -128,52 +128,15 @@ export default class EditWaypointFormView extends AbstractStatefulView {
     return getEditWaypointFormTemplate(this._state, this.destinations, this.offers);
   }
 
-  /**
-   * Преобразовывает объект с информацией о точке маршрута в объект с информацией о состоянии точки маршрута.
-   * @param {object} waypoint - объект с информацией о точке маршрута.
-   * @returns {object} state - объект с информацией о состоянии точки маршрута.
-   */
-  static parseWaypointToState(waypoint) {
-    const state = {...waypoint};
-    state.updatedType = state.type;
-    state.updatedBasePrice = state.basePrice;
-    state.updatedDestination = waypoint.destination;
-    state.updatedOffers = new Set(waypoint.offers);
-    state.updatedDateFrom = waypoint.dateFrom;
-    state.updatedDateTo = waypoint.dateTo;
+  removeElement() {
+    super.removeElement();
 
-    return state;
-  }
-
-  /**
-   * Преобразовывает объект с информацией о состоянии точки маршрута в объект с информацией о точке маршрута.
-   * @param {object} state - объект с информацией о состоянии точки маршрута.
-   * @returns {object} waypoint - объект с информацией о точке маршрута.
-   */
-  static parseStateToWaypoint(state) {
-    const waypoint = {...state};
-
-    waypoint.offers = [...waypoint.updatedOffers];
-    waypoint.type = waypoint.updatedType;
-    waypoint.basePrice = waypoint.updatedBasePrice;
-    waypoint.dateFrom = waypoint.updatedDateFrom;
-    waypoint.dateTo = waypoint.updatedDateTo;
-
-    if (waypoint.updatedDestination !== -1) {
-      waypoint.destination = waypoint.updatedDestination;
+    if (this.#dateFromPicker && this.#dateToPicker) {
+      this.#dateFromPicker.destroy();
+      this.#dateToPicker.destroy();
+      this.#dateFromPicker = null;
+      this.#dateToPicker = null;
     }
-
-    delete waypoint.updatedType;
-    delete waypoint.updatedBasePrice;
-    delete waypoint.updatedDestination;
-    delete waypoint.updatedOffers;
-    delete waypoint.updatedDateFrom;
-    delete waypoint.updatedDateTo;
-    delete waypoint.isDisabled;
-    delete waypoint.isSaving;
-    delete waypoint.isDeleting;
-
-    return waypoint;
   }
 
   /**
@@ -240,17 +203,6 @@ export default class EditWaypointFormView extends AbstractStatefulView {
       this.setListener(handler, this._handlers[handler].outerCallback ?? this._handlers[handler].cb);
     }
   };
-
-  removeElement() {
-    super.removeElement();
-
-    if (this.#dateFromPicker && this.#dateToPicker) {
-      this.#dateFromPicker.destroy();
-      this.#dateToPicker.destroy();
-      this.#dateFromPicker = null;
-      this.#dateToPicker = null;
-    }
-  }
 
   #setDatepickers() {
     const DATEPICKER_CONFIG = {
@@ -364,4 +316,52 @@ export default class EditWaypointFormView extends AbstractStatefulView {
 
     this.#checkValidationError();
   };
+
+  /**
+   * Преобразовывает объект с информацией о точке маршрута в объект с информацией о состоянии точки маршрута.
+   * @param {object} waypoint - объект с информацией о точке маршрута.
+   * @returns {object} state - объект с информацией о состоянии точки маршрута.
+   */
+  static parseWaypointToState(waypoint) {
+    const state = {...waypoint};
+    state.updatedType = state.type;
+    state.updatedBasePrice = state.basePrice;
+    state.updatedDestination = waypoint.destination;
+    state.updatedOffers = new Set(waypoint.offers);
+    state.updatedDateFrom = waypoint.dateFrom;
+    state.updatedDateTo = waypoint.dateTo;
+
+    return state;
+  }
+
+  /**
+   * Преобразовывает объект с информацией о состоянии точки маршрута в объект с информацией о точке маршрута.
+   * @param {object} state - объект с информацией о состоянии точки маршрута.
+   * @returns {object} waypoint - объект с информацией о точке маршрута.
+   */
+  static parseStateToWaypoint(state) {
+    const waypoint = {...state};
+
+    waypoint.offers = [...waypoint.updatedOffers];
+    waypoint.type = waypoint.updatedType;
+    waypoint.basePrice = waypoint.updatedBasePrice;
+    waypoint.dateFrom = waypoint.updatedDateFrom;
+    waypoint.dateTo = waypoint.updatedDateTo;
+
+    if (waypoint.updatedDestination !== -1) {
+      waypoint.destination = waypoint.updatedDestination;
+    }
+
+    delete waypoint.updatedType;
+    delete waypoint.updatedBasePrice;
+    delete waypoint.updatedDestination;
+    delete waypoint.updatedOffers;
+    delete waypoint.updatedDateFrom;
+    delete waypoint.updatedDateTo;
+    delete waypoint.isDisabled;
+    delete waypoint.isSaving;
+    delete waypoint.isDeleting;
+
+    return waypoint;
+  }
 }

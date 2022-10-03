@@ -71,6 +71,8 @@ export default class NewWaypointPresenter {
     this.#newWaypointFormComponent.shake(resetFormState);
   }
 
+  // Обработчики
+
   /**
    * Обрабатывает отправку формы создания новой точки маршрута.
    * @param {object} waypoint - точка маршрута.

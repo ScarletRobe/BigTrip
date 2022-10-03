@@ -37,16 +37,6 @@ export default class ListSortView extends AbstractView {
     return getListSortElement(this.waypointsAmount, this.#currentSortType);
   }
 
-  #setSortClickHandler(callback) {
-    return (evt) => {
-      if (evt.target.tagName === 'LABEL' && SORT_OPTIONS[evt.target.dataset.sortType].sort && !evt.target.control.checked && !evt.target.control.disabled) {
-        evt.preventDefault();
-        callback(evt.target.dataset.sortType);
-        evt.target.control.checked = true;
-      }
-    };
-  }
-
   /**
    * Устанавливает обработчик событий для формы редактирования
    * @param {string} type - тип отслеживаемого события.
@@ -65,5 +55,15 @@ export default class ListSortView extends AbstractView {
         throw new Error('Unknown type of event for this view');
     }
     this.element.querySelector(this._handlers[type].element).addEventListener(this._handlers[type].type, this._handlers[type].cb);
+  }
+
+  #setSortClickHandler(callback) {
+    return (evt) => {
+      if (evt.target.tagName === 'LABEL' && SORT_OPTIONS[evt.target.dataset.sortType].sort && !evt.target.control.checked && !evt.target.control.disabled) {
+        evt.preventDefault();
+        callback(evt.target.dataset.sortType);
+        evt.target.control.checked = true;
+      }
+    };
   }
 }
