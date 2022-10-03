@@ -2,18 +2,26 @@ import ListSortView from '../view/list-sort-view.js';
 import WaypointsListView from '../view/waypoints-list-view.js';
 import EmptyListView from '../view/empty-list-view.js';
 import LoadingView from '../view/loading-view.js';
+import ErrorMessageView from '../view/error-message-view';
 
 import WaypointPresenter from './waypoint-presenter.js';
 import NewWaypointPresenter from './new-waypoint-presenter.js';
 
 import { RenderPosition, render, remove } from '../framework/render.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import { SORT_OPTIONS, UpdateType, UserAction, FilterType } from '../consts.js';
+
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 
 export default class TripEventsPresenter {
   #listSortComponent = null;
   #waypointsListComponent = new WaypointsListView();
   #emptyListComponent = null;
   #loadingComponent = new LoadingView();
+  #errorMessageComponent = null;
 
   #container = null;
   #waypointsModel = null;
@@ -21,19 +29,22 @@ export default class TripEventsPresenter {
 
   #waypointPresentersList = new Map();
   #newWaypointPresenter = null;
+  #filterPresenter = null;
 
-  #currentSortType = null;
+  #currentSortType = SORT_OPTIONS.day.name;
   #currentFilter = FilterType.Everything;
   #isLoading = true;
+  #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
 
   /**
    * @param {object} container - DOM элемент, в который будут помещены все элементы, созданные в ходе работы.
    * @param {object} waypointsModel - Модель, содержащая всю информацию о точках маршрута.
    */
-  constructor(container, waypointsModel, filterModel) {
+  constructor(container, waypointsModel, filterModel, filterPresenter) {
     this.#container = container;
     this.#waypointsModel = waypointsModel;
     this.#filterModel = filterModel;
+    this.#filterPresenter = filterPresenter;
 
     this.#waypointsModel.addObserver(this.#modelEventHandler);
     this.#filterModel.addObserver(this.#filterModelEventHandler);
@@ -58,6 +69,29 @@ export default class TripEventsPresenter {
     }
 
     return result;
+  }
+
+  /**
+   * Отрисовывает базовые элементы.
+   */
+  init() {
+    this.#renderLoading();
+    this.#renderWaypointsList();
+  }
+
+  /**
+   * Создает форму создания новой точки маршрута.
+   * @param {function} cancelCallback - колбэк, который будет вызван при закрытии формы.
+   */
+  createNewWaypointFormComponentView(cancelCallback) {
+    this.#waypointPresentersList.forEach((presenter) => {
+      presenter.resetView();
+    });
+
+    this.#filterModel.setFilter(UpdateType.MINOR, FilterType.Everything);
+
+    this.#newWaypointPresenter = new NewWaypointPresenter(this.#waypointsListComponent.element, this.#viewActionHandler, this.#waypointsModel.offers, this.#waypointsModel.destinations);
+    this.#newWaypointPresenter.init(cancelCallback);
   }
 
   /**
@@ -91,7 +125,7 @@ export default class TripEventsPresenter {
   }
 
   #renderSort() {
-    this.#listSortComponent = new ListSortView(this.#waypointsModel.waypoints.length, this.#currentSortType);
+    this.#listSortComponent = new ListSortView(this.waypoints.length, this.#currentSortType);
     render(this.#listSortComponent, this.#container, RenderPosition.AFTERBEGIN);
     this.#listSortComponent.setListener('click', this.#listSortClickHandler);
   }
@@ -104,6 +138,15 @@ export default class TripEventsPresenter {
     remove(this.#loadingComponent);
     this.#emptyListComponent = new EmptyListView(this.#currentFilter);
     render(this.#emptyListComponent, this.#container);
+  }
+
+  #renderLoading() {
+    render(this.#loadingComponent, this.#container, RenderPosition.AFTERBEGIN);
+  }
+
+  #renderErrorMessage() {
+    this.#errorMessageComponent = new ErrorMessageView();
+    render(this.#errorMessageComponent, this.#container, RenderPosition.AFTERBEGIN);
   }
 
   /**
@@ -140,6 +183,10 @@ export default class TripEventsPresenter {
       remove(this.#emptyListComponent);
     }
 
+    if(!this.#isLoading) {
+      remove(this.#loadingComponent);
+    }
+
     remove(this.#listSortComponent);
   }
 
@@ -154,34 +201,6 @@ export default class TripEventsPresenter {
 
     this.#renderSort();
     this.#renderWaypoints(waypoints);
-  }
-
-  #renderLoading() {
-    render(this.#loadingComponent, this.#container, RenderPosition.AFTERBEGIN);
-  }
-
-  /**
-   * Отрисовывает базовые элементы.
-   */
-  init() {
-    this.#renderLoading();
-    this.#renderWaypointsList();
-  }
-
-  /**
-   * Создает форму создания новой точки маршрута.
-   * @param {function} cancelCallback - колбэк, который будет вызван при закрытии формы.
-   */
-  createNewWaypointFormComponentView(cancelCallback) {
-    this.#waypointPresentersList.forEach((presenter) => {
-      presenter.resetView();
-    });
-
-    this.#filterModel.setFilter(UpdateType.MINOR, FilterType.Everything);
-
-    this.#newWaypointPresenter = new NewWaypointPresenter(this.#waypointsListComponent.element, this.#viewActionHandler, this.#waypointsModel.offers, this.#waypointsModel.destinations);
-    this.#newWaypointPresenter.init(cancelCallback);
-
   }
 
   // Обработчики
@@ -220,14 +239,10 @@ export default class TripEventsPresenter {
   #filterModelEventHandler = (_, currentFilter) => {
     this.#currentSortType = this.#currentSortType ? SORT_OPTIONS.day.name : null;
 
-    switch (currentFilter) {
-      case FilterType.Future:
-        this.#currentFilter = FilterType.Future;
-        break;
-      case FilterType.Everything:
-        this.#currentFilter = FilterType.Everything;
-        break;
+    if (currentFilter) {
+      this.#currentFilter = currentFilter;
     }
+
     this.#clearBoard();
     this.#renderBoard(this.waypoints);
   };
@@ -248,10 +263,22 @@ export default class TripEventsPresenter {
         break;
       case UpdateType.INIT:
         this.#isLoading = false;
-        remove(this.#loadingComponent);
         this.#clearBoard();
         this.#renderBoard(this.waypoints);
         break;
+      case UpdateType.ERROR:
+        this.#isLoading = false;
+        this.#filterPresenter.disableFilters(FilterType.Everything, FilterType.Future);
+        this.#clearBoard();
+        this.#renderErrorMessage();
+        break;
+    }
+
+    if (this.#filterFutureEvents(this.waypoints).length === 0) {
+      this.#filterPresenter.disableFilters(FilterType.Future);
+    }
+    if (this.waypoints.length === 0) {
+      this.#filterPresenter.disableFilters(FilterType.Everything);
     }
   };
 
@@ -261,17 +288,34 @@ export default class TripEventsPresenter {
    * @param {string} updateType - тип обновления.
    * @param {object} update - измененнная точка маршрута.
    */
-  #viewActionHandler = (actionType, updateType, update) => {
+  #viewActionHandler = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
     switch (actionType) {
       case UserAction.UPDATE_WAYPOINT:
-        this.#waypointsModel.updateWaypoint(updateType, update);
+        this.#waypointPresentersList.get(update.id).setSaving();
+        try {
+          await this.#waypointsModel.updateWaypoint(updateType, update);
+        } catch {
+          this.#waypointPresentersList.get(update.id).setAborting();
+        }
         break;
       case UserAction.ADD_WAYPOINT:
-        this.#waypointsModel.addWaypoint(updateType, update);
+        this.#newWaypointPresenter.setSaving();
+        try {
+          this.#waypointsModel.addWaypoint(updateType, update);
+        } catch {
+          this.#newWaypointPresenter.setAborting();
+        }
         break;
       case UserAction.DELETE_WAYPOINT:
-        this.#waypointsModel.deleteWaypoint(updateType, update);
+        this.#waypointPresentersList.get(update.id).setDeleting();
+        try {
+          this.#waypointsModel.deleteWaypoint(updateType, update);
+        } catch {
+          this.#waypointPresentersList.get(update.id).setAborting();
+        }
         break;
     }
+    this.#uiBlocker.unblock();
   };
 }

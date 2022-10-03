@@ -10,6 +10,7 @@ import { Russian } from 'flatpickr/dist/l10n/ru.js';
 import { getDestinationListOptions } from './templates/destination-list-options.js';
 import { getEventTypeItems } from './templates/event-type-items.js';
 import { getEventAvailableOffers } from './templates/event-available-offers.js';
+import { getDestinationEventPhotos } from './templates/destination-event-photos.js';
 
 /**
  * Генерирует форму редактирования события.
@@ -46,7 +47,7 @@ const getEditWaypointFormTemplate = (state, destinations, offers) => {
             <label class="event__label  event__type-output" for="event-destination-1">
               ${state.updatedType}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1" required>
             <datalist id="destination-list-1">
               ${getDestinationListOptions(destinations)}
             </datalist>
@@ -65,11 +66,11 @@ const getEditWaypointFormTemplate = (state, destinations, offers) => {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${state.updatedBasePrice}">
+            <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${state.updatedBasePrice}" min="1" required>
           </div>
 
-          <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Delete</button>
+          <button class="event__save-btn  btn  btn--blue" type="submit" ${state.isDisabled ? 'disabled' : ''}>${state.isSaving ? 'Saving...' : 'Save'}</button>
+          <button class="event__reset-btn" type="reset"${state.isDisabled ? 'disabled' : ''}>${state.isDeleting ? 'Deleting...' : 'Delete'}</button>
           <button class="event__rollup-btn" type="button">
             <span class="visually-hidden">Open event</span>
           </button>
@@ -88,6 +89,9 @@ const getEditWaypointFormTemplate = (state, destinations, offers) => {
           <section class="event__section  event__section--destination">
             <h3 class="event__section-title  event__section-title--destination">Destination</h3>
             <p class="event__destination-description">${destination.description}</p>
+
+            ${getDestinationEventPhotos(destination)}
+
           </section>
         </section>
       </form>
@@ -101,6 +105,7 @@ export default class EditWaypointFormView extends AbstractStatefulView {
   #validation = {
     basePrice: true,
     destination: true,
+    date: true,
   };
 
   /**
@@ -123,49 +128,15 @@ export default class EditWaypointFormView extends AbstractStatefulView {
     return getEditWaypointFormTemplate(this._state, this.destinations, this.offers);
   }
 
-  /**
-   * Преобразовывает объект с информацией о точке маршрута в объект с информацией о состоянии точки маршрута.
-   * @param {object} waypoint - объект с информацией о точке маршрута.
-   * @returns {object} state - объект с информацией о состоянии точки маршрута.
-   */
-  static parseWaypointToState(waypoint) {
-    const state = {...waypoint};
-    state.updatedType = state.type;
-    state.updatedBasePrice = state.basePrice;
-    state.updatedDestination = waypoint.destination;
-    state.updatedOffers = new Set(waypoint.offers);
-    state.updatedDateFrom = waypoint.dateFrom;
-    state.updatedDateTo = waypoint.dateTo;
+  removeElement() {
+    super.removeElement();
 
-    return state;
-  }
-
-  /**
-   * Преобразовывает объект с информацией о состоянии точки маршрута в объект с информацией о точке маршрута.
-   * @param {object} state - объект с информацией о состоянии точки маршрута.
-   * @returns {object} waypoint - объект с информацией о точке маршрута.
-   */
-  static parseStateToWaypoint(state) {
-    const waypoint = {...state};
-
-    waypoint.offers = [...waypoint.updatedOffers];
-    waypoint.type = waypoint.updatedType;
-    waypoint.basePrice = waypoint.updatedBasePrice;
-    waypoint.dateFrom = waypoint.updatedDateFrom;
-    waypoint.dateTo = waypoint.updatedDateTo;
-
-    if (waypoint.updatedDestination !== -1) {
-      waypoint.destination = waypoint.updatedDestination;
+    if (this.#dateFromPicker && this.#dateToPicker) {
+      this.#dateFromPicker.destroy();
+      this.#dateToPicker.destroy();
+      this.#dateFromPicker = null;
+      this.#dateToPicker = null;
     }
-
-    delete waypoint.updatedType;
-    delete waypoint.updatedBasePrice;
-    delete waypoint.updatedDestination;
-    delete waypoint.updatedOffers;
-    delete waypoint.updatedDateFrom;
-    delete waypoint.updatedDateTo;
-
-    return waypoint;
   }
 
   /**
@@ -232,17 +203,6 @@ export default class EditWaypointFormView extends AbstractStatefulView {
       this.setListener(handler, this._handlers[handler].outerCallback ?? this._handlers[handler].cb);
     }
   };
-
-  removeElement() {
-    super.removeElement();
-
-    if (this.#dateFromPicker && this.#dateToPicker) {
-      this.#dateFromPicker.destroy();
-      this.#dateToPicker.destroy();
-      this.#dateFromPicker = null;
-      this.#dateToPicker = null;
-    }
-  }
 
   #setDatepickers() {
     const DATEPICKER_CONFIG = {
@@ -345,5 +305,63 @@ export default class EditWaypointFormView extends AbstractStatefulView {
         break;
       default: throw new Error('Incorrect field');
     }
+
+    if (this._state.updatedDateTo.diff(this._state.updatedDateFrom, 'm') < 0) {
+      this.#validation.date = false;
+      this.element.querySelector('.event__field-group--time').style.borderBottom = '1px solid red';
+    } else {
+      this.#validation.date = true;
+      this.element.querySelector('.event__field-group--time').style.borderBottom = '1px solid blue';
+    }
+
+    this.#checkValidationError();
   };
+
+  /**
+   * Преобразовывает объект с информацией о точке маршрута в объект с информацией о состоянии точки маршрута.
+   * @param {object} waypoint - объект с информацией о точке маршрута.
+   * @returns {object} state - объект с информацией о состоянии точки маршрута.
+   */
+  static parseWaypointToState(waypoint) {
+    const state = {...waypoint};
+    state.updatedType = state.type;
+    state.updatedBasePrice = state.basePrice;
+    state.updatedDestination = waypoint.destination;
+    state.updatedOffers = new Set(waypoint.offers);
+    state.updatedDateFrom = waypoint.dateFrom;
+    state.updatedDateTo = waypoint.dateTo;
+
+    return state;
+  }
+
+  /**
+   * Преобразовывает объект с информацией о состоянии точки маршрута в объект с информацией о точке маршрута.
+   * @param {object} state - объект с информацией о состоянии точки маршрута.
+   * @returns {object} waypoint - объект с информацией о точке маршрута.
+   */
+  static parseStateToWaypoint(state) {
+    const waypoint = {...state};
+
+    waypoint.offers = [...waypoint.updatedOffers];
+    waypoint.type = waypoint.updatedType;
+    waypoint.basePrice = waypoint.updatedBasePrice;
+    waypoint.dateFrom = waypoint.updatedDateFrom;
+    waypoint.dateTo = waypoint.updatedDateTo;
+
+    if (waypoint.updatedDestination !== -1) {
+      waypoint.destination = waypoint.updatedDestination;
+    }
+
+    delete waypoint.updatedType;
+    delete waypoint.updatedBasePrice;
+    delete waypoint.updatedDestination;
+    delete waypoint.updatedOffers;
+    delete waypoint.updatedDateFrom;
+    delete waypoint.updatedDateTo;
+    delete waypoint.isDisabled;
+    delete waypoint.isSaving;
+    delete waypoint.isDeleting;
+
+    return waypoint;
+  }
 }

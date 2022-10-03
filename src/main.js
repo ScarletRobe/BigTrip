@@ -23,8 +23,8 @@ const END_POINT = 'https://18.ecmascript.pages.academy/big-trip';
 const waypointsModel = new WaypointsModel(new WaypointsApiService(END_POINT, AUTHORIZATION));
 const filterModel = new FilterModel();
 
-const tripEventsPresenter = new TripEventsPresenter(tripEventsContainerElement, waypointsModel, filterModel);
 const filterPresenter = new FilterPresenter(waypointsModel, filterModel, filtersContainerElement);
+const tripEventsPresenter = new TripEventsPresenter(tripEventsContainerElement, waypointsModel, filterModel, filterPresenter);
 
 const addEventBtnComponent = new AddEventBtnView();
 
@@ -39,11 +39,18 @@ const addEventBtnClickHandler = () => {
   addEventBtnComponent.manageDisable(true);
 };
 
+const initWaypointsModel = async () => {
+  if (await waypointsModel.init() instanceof Error) {
+    render(addEventBtnComponent, addEventBtnContainer);
+    addEventBtnComponent.manageDisable(true);
+    return;
+  }
+  render(addEventBtnComponent, addEventBtnContainer);
+  addEventBtnComponent.setListener('click', addEventBtnClickHandler);
+};
+
 filterPresenter.init();
 tripEventsPresenter.init();
-waypointsModel.init()
-  .finally(() => {
-    render(addEventBtnComponent, addEventBtnContainer);
-    addEventBtnComponent.setListener('click', addEventBtnClickHandler);
-  });
+initWaypointsModel();
+
 
