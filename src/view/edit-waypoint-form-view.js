@@ -1,6 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { humanizeDate, getSelectedDestination, getSelectedOffers, formatDate } from '../utils.js';
-import { TYPES } from '../consts.js';
+import { Types } from '../consts.js';
 
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
@@ -261,7 +261,7 @@ export default class EditWaypointFormView extends AbstractStatefulView {
       const htmlFor = evt.target.htmlFor;
       this._state.updatedOffers.clear();
       this.updateElement({
-        updatedType: Object.keys(TYPES).find((type) => TYPES[type].id === Number(htmlFor[htmlFor.length - 1])),
+        updatedType: Object.keys(Types).find((type) => Types[type].id === Number(htmlFor[htmlFor.length - 1])),
       });
     }
   };

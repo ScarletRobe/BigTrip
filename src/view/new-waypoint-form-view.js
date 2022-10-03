@@ -10,7 +10,7 @@ import 'flatpickr/dist/themes/material_blue.css';
 import { Russian } from 'flatpickr/dist/l10n/ru.js';
 
 import { humanizeDate, getSelectedDestination, getSelectedOffers, formatDate } from '../utils.js';
-import { TYPES } from '../consts.js';
+import { Types } from '../consts.js';
 
 /**
  * Возвращает шаблон элемента создания нового событий.
@@ -235,7 +235,7 @@ export default class NewWaypointFormView extends AbstractStatefulView {
       const htmlFor = evt.target.htmlFor;
       this._state.offers.clear();
       this.updateElement({
-        type: Object.keys(TYPES).find((type) => TYPES[type].id === Number(htmlFor[htmlFor.length - 1])),
+        type: Object.keys(Types).find((type) => Types[type].id === Number(htmlFor[htmlFor.length - 1])),
       });
     }
   };
