@@ -53,12 +53,12 @@ export default class NewWaypointPresenter {
     document.removeEventListener('keydown', this.#documentKeydownHandler);
   }
 
-  setSaving = () => {
+  setSaving() {
     this.#newWaypointFormComponent.updateElement({
       isDisabled: true,
       isSaving: true,
     });
-  };
+  }
 
   setAborting() {
     const resetFormState = () => {

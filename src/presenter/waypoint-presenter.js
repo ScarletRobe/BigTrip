@@ -89,7 +89,7 @@ export default class WaypointPresenter {
     });
   }
 
-  setAborting = () => {
+  setAborting() {
     const resetFormState = () => {
       this.#waypointEditFormComponent.updateElement({
         isDisabled: false,
@@ -99,7 +99,7 @@ export default class WaypointPresenter {
     };
 
     this.#waypointEditFormComponent.shake(resetFormState);
-  };
+  }
 
   #replaceWaypointToEditForm() {
     replace(this.#waypointEditFormComponent, this.#waypointComponent);
