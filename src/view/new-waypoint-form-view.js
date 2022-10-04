@@ -93,17 +93,26 @@ const getNewPointFormTemplate = (offers, destinations, state) => {
 };
 
 export default class NewWaypointFormView extends AbstractStatefulView {
-  #dateFromPicker = null;
-  #dateToPicker = null;
-  #validation = {
-    basePrice: true,
-    destination: true,
-    date: true,
-  };
-
   #Pickers = {
     DATE_FROM: 'dateFrom',
     DATE_TO: 'dateTo',
+  };
+
+  #dateFromPicker = null;
+  #dateToPicker = null;
+  #validation = {
+    basePrice: {
+      valid: true,
+      selector: '.event__field-group--price',
+    },
+    destination: {
+      valid: true,
+      selector: '.event__field-group--destination',
+    },
+    date: {
+      valid: true,
+      selector: '.event__field-group--time',
+    },
   };
 
   constructor(offers, destinations) {
@@ -157,6 +166,7 @@ export default class NewWaypointFormView extends AbstractStatefulView {
   #setFormSubmitHandler(callback) {
     return (evt) => {
       evt.preventDefault();
+      this.#checkValidationError();
       callback(NewWaypointFormView.parseStateToWaypoint(this._state));
     };
   }
@@ -244,12 +254,22 @@ export default class NewWaypointFormView extends AbstractStatefulView {
   }
 
   #checkValidationError() {
-    if (Object.keys(this.#validation).every((validator) => this.#validation[validator])) {
+    const invalids = Object.keys(this.#validation).filter((validator) => !this.#validation[validator].valid);
+    if (invalids.length) {
+      this.element.querySelector('.event__save-btn').disabled = true;
+      invalids.forEach((field) => {
+        this.element.querySelector(this.#validation[field].selector).style.borderBottom = '1px solid red';
+      });
+    } else {
       this.element.querySelector('.event__save-btn').disabled = false;
-      return;
     }
 
-    this.element.querySelector('.event__save-btn').disabled = true;
+    Object.keys(this.#validation).forEach((field) => {
+      if (invalids.includes(field)) {
+        return;
+      }
+      this.element.querySelector(this.#validation[field].selector).style.borderBottom = '1px solid blue';
+    });
   }
 
   // Обработчики
@@ -279,13 +299,10 @@ export default class NewWaypointFormView extends AbstractStatefulView {
   };
 
   #eventPriceChangeHandler = (evt) => {
-    this.#checkValidationError();
-    if(isNaN(evt.target.valueAsNumber)) {
-      this.element.querySelector('.event__field-group--price').style.borderBottom = '1px solid red';
-      this.#validation.basePrice = false;
+    if(isNaN(evt.target.valueAsNumber) || evt.target.valueAsNumber < 1) {
+      this.#validation.basePrice.valid = false;
     } else {
-      this.#validation.basePrice = true;
-      this.element.querySelector('.event__field-group--price').style.borderBottom = '1px solid blue';
+      this.#validation.basePrice.valid = true;
       this._state.basePrice = evt.target.valueAsNumber;
     }
     this.#checkValidationError();
@@ -293,16 +310,14 @@ export default class NewWaypointFormView extends AbstractStatefulView {
 
   #eventDestinationInputHandler = (evt) => {
     evt.preventDefault();
-    this.element.querySelector('.event__field-group--destination').style.borderBottom = '1px solid blue';
     const choosedDestination = this.destinations.find((destination) => destination.name === evt.target.value);
     if (choosedDestination) {
-      this.#validation.destination = true;
+      this.#validation.destination.valid = true;
       this.updateElement({
         destination: choosedDestination.id,
       });
     } else {
-      this.element.querySelector('.event__field-group--destination').style.borderBottom = '1px solid red';
-      this.#validation.destination = false;
+      this.#validation.destination.valid = false;
     }
     this.#checkValidationError();
   };
@@ -320,13 +335,7 @@ export default class NewWaypointFormView extends AbstractStatefulView {
       default: throw new Error('Incorrect field');
     }
 
-    if (this._state.dateTo.diff(this._state.dateFrom, 'm') < 0) {
-      this.#validation.date = false;
-      this.element.querySelector('.event__field-group--time').style.borderBottom = '1px solid red';
-    } else {
-      this.#validation.date = true;
-      this.element.querySelector('.event__field-group--time').style.borderBottom = '1px solid blue';
-    }
+    this.#validation.date.valid = !(this._state.dateTo.diff(this._state.dateFrom, 'm') < 0);
 
     this.#checkValidationError();
   };
