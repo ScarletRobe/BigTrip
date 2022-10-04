@@ -17,7 +17,7 @@ const addEventBtnContainer = document.querySelector('.trip-main');
 
 // Переменные
 
-const AUTHORIZATION = 'Basic scrltrb55';
+const AUTHORIZATION = 'Basic scrltrb56';
 const END_POINT = 'https://18.ecmascript.pages.academy/big-trip';
 
 const waypointsModel = new WaypointsModel(new WaypointsApiService(END_POINT, AUTHORIZATION));
