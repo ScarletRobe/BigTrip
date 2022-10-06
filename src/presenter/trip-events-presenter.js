@@ -203,6 +203,8 @@ export default class TripEventsPresenter {
     this.#renderWaypoints(waypoints);
   }
 
+  // #checkFutureEvents
+
   // Обработчики
 
   /**
@@ -245,6 +247,10 @@ export default class TripEventsPresenter {
 
     this.#clearBoard();
     this.#renderBoard(this.waypoints);
+
+    if (!this.#filterFutureEvents(this.waypoints).length) {
+      this.#filterPresenter.disableFilters(FilterType.FUTURE);
+    }
   };
 
   /**
@@ -276,9 +282,6 @@ export default class TripEventsPresenter {
 
     if (!this.#filterFutureEvents(this.waypoints).length) {
       this.#filterPresenter.disableFilters(FilterType.FUTURE);
-    }
-    if (!this.waypoints.length) {
-      this.#filterPresenter.disableFilters(FilterType.EVERYTHING);
     }
   };
 
