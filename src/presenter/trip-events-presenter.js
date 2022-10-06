@@ -203,8 +203,6 @@ export default class TripEventsPresenter {
     this.#renderWaypoints(waypoints);
   }
 
-  // #checkFutureEvents
-
   // Обработчики
 
   /**

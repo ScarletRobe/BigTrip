@@ -62,7 +62,6 @@ export default class ListFilterView extends AbstractView {
   }
 
   disableFilter(filterName) {
-    // this.#isDisabled[filterName] = true;
     this.element.querySelector(`#filter-${filterName}`).disabled = true;
   }
 
