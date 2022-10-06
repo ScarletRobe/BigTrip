@@ -15,7 +15,7 @@ const getTripFilters = (currentFilter) => (
  * Возвращает шаблон элемента фильтрации событий.
  * @returns {string} строка с HTML кодом.
  */
-const getListfilterTemplate = (currentFilter) => (
+const getListFilterTemplate = (currentFilter) => (
   `<div>
     <form class="trip-filters" action="#" method="get">
 
@@ -28,6 +28,10 @@ const getListfilterTemplate = (currentFilter) => (
 
 export default class ListFilterView extends AbstractView {
   #currentFilter = null;
+  #isDisabled = {
+    [FilterType.EVERYTHING]: false,
+    [FilterType.FUTURE]: false,
+  };
 
   constructor(currentFilter) {
     super();
@@ -35,7 +39,7 @@ export default class ListFilterView extends AbstractView {
   }
 
   get template () {
-    return getListfilterTemplate(this.#currentFilter);
+    return getListFilterTemplate(this.#currentFilter);
   }
 
   /**
@@ -58,6 +62,7 @@ export default class ListFilterView extends AbstractView {
   }
 
   disableFilter(filterName) {
+    // this.#isDisabled[filterName] = true;
     this.element.querySelector(`#filter-${filterName}`).disabled = true;
   }
 

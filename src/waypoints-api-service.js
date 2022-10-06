@@ -65,12 +65,10 @@ export default class WaypointsApiService extends ApiService {
    * @returns {Promise} распарсенный ответ.
    */
   async deleteWaypoint(waypoint) {
-    const response = await this._load({
+    return await this._load({
       url: `points/${waypoint.id}`,
       method: Method.DELETE,
     });
-
-    return response;
   }
 
   /**
